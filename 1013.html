@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>財務報表分析 考題練習</title>
+
+<!-- Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QMQ17LMD1T"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QMQ17LMD1T');
+</script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+  :root {
+    --bg:#f5f2eb; --surface:#fffdf8; --border:#d6cfc0;
+    --ink:#2c2416; --ink-light:#7a6f5e;
+    --accent:#c8541a; --accent-light:#f2e8e0;
+    --green:#2d7a4f; --green-light:#e0f0e8;
+    --red:#c0392b; --red-light:#fce8e6;
+    --yellow:#e8a020; --yellow-light:#fef5e0;
+    --blue:#1a5fa8; --blue-light:#e0ecf8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+
+  /* ── Header ── */
+  header{background:var(--ink);color:#fff;padding:13px 20px;display:flex;align-items:center;gap:10px;}
+  header h1{font-size:.95rem;font-weight:700;letter-spacing:.04em;flex:1;}
+  .hdr-score{font-family:'Space Mono',monospace;font-size:.8rem;color:#ccc;}
+
+  /* ── App ── */
+  .app{max-width:720px;margin:0 auto;padding:20px 16px 100px;}
+
+  /* ── Screen switching ── */
+  .screen{display:none;} .screen.active{display:block;}
+
+  /* ── Start screen ── */
+  .start-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:32px 24px;text-align:center;margin-top:24px;}
+  .start-card h2{font-size:1.2rem;font-weight:700;margin-bottom:8px;}
+  .start-card p{font-size:.88rem;color:var(--ink-light);line-height:1.7;margin-bottom:24px;}
+  .info-row{display:flex;justify-content:center;gap:24px;margin-bottom:28px;flex-wrap:wrap;}
+  .info-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .info-val{font-family:'Space Mono',monospace;font-size:1.4rem;font-weight:700;color:var(--accent);}
+  .info-label{font-size:.72rem;color:var(--ink-light);}
+
+  /* chapter filter */
+  .filter-section{text-align:left;margin-bottom:20px;}
+  .filter-label{font-size:.75rem;color:var(--ink-light);margin-bottom:8px;}
+  .filter-row{display:flex;gap:6px;flex-wrap:wrap;}
+  .filter-btn{padding:6px 12px;border-radius:99px;font-size:.78rem;font-weight:700;border:1.5px solid var(--border);background:var(--bg);cursor:pointer;transition:all .15s;font-family:'Noto Sans TC',sans-serif;color:var(--ink);}
+  .filter-btn.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+  .shuffle-row{display:flex;gap:16px;justify-content:center;margin-bottom:20px;}
+  .shuffle-row label{display:flex;align-items:center;gap:6px;font-size:.88rem;cursor:pointer;}
+  .shuffle-row input{accent-color:var(--accent);}
+
+  /* ── Quiz screen ── */
+  /* Progress bar */
+  .progress-bar-wrap{margin-bottom:16px;}
+  .progress-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .progress-label{font-family:'Space Mono',monospace;font-size:.78rem;color:var(--ink-light);}
+  .progress-answered{font-size:.75rem;color:var(--ink-light);}
+  .progress-track{width:100%;height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .3s;}
+
+  /* dot map */
+  .dot-map{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:14px;}
+  .dot{width:18px;height:18px;border-radius:4px;background:var(--border);cursor:pointer;transition:all .15s;border:2px solid transparent;font-size:.6rem;display:flex;align-items:center;justify-content:center;color:transparent;}
+  .dot.answered{background:var(--accent-light);border-color:var(--accent);}
+  .dot.current{border-color:var(--ink);background:var(--ink);color:#fff;}
+  .dot.answered.current{background:var(--accent);border-color:var(--ink);}
+
+  /* question card */
+  .q-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:22px 20px;margin-bottom:14px;}
+  .q-chapter-badge{display:inline-block;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:.05em;margin-bottom:10px;}
+  .ch4{background:var(--blue-light);color:var(--blue);}
+  .ch5{background:var(--yellow-light);color:var(--yellow);}
+  .ch-func{background:#f0e8f8;color:#7b3fa8;}
+  .ch-profit{background:var(--green-light);color:var(--green);}
+
+  .q-stem{font-size:.95rem;font-weight:500;line-height:1.75;margin-bottom:18px;}
+  .mc-options{display:flex;flex-direction:column;gap:9px;}
+  .mc-opt{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border:1.5px solid var(--border);border-radius:9px;cursor:pointer;transition:all .15s;background:var(--bg);text-align:left;font-size:.9rem;line-height:1.55;font-family:'Noto Sans TC',sans-serif;color:var(--ink);width:100%;min-height:44px;}
+  .mc-opt:hover{border-color:var(--accent);background:var(--accent-light);}
+  .mc-opt.selected{border-color:var(--accent);background:var(--accent-light);}
+  .mc-opt.correct{border-color:var(--green);background:var(--green-light);}
+  .mc-opt.wrong{border-color:var(--red);background:var(--red-light);}
+  .mc-opt.locked{cursor:default;}
+  .mc-opt.locked:hover{border-color:var(--border);background:var(--bg);}
+  .mc-opt.locked.selected:hover{border-color:var(--accent);background:var(--accent-light);}
+  .mc-opt.locked.correct:hover{border-color:var(--green);background:var(--green-light);}
+  .mc-opt.locked.wrong:hover{border-color:var(--red);background:var(--red-light);}
+  .opt-key{font-family:'Space Mono',monospace;font-size:.78rem;font-weight:700;min-width:22px;color:var(--ink-light);padding-top:2px;flex-shrink:0;}
+  .mc-opt.selected .opt-key{color:var(--accent);}
+  .mc-opt.correct .opt-key{color:var(--green);}
+  .mc-opt.wrong .opt-key{color:var(--red);}
+
+  /* feedback */
+  .feedback{margin-top:14px;padding:12px 14px;border-radius:9px;font-size:.88rem;line-height:1.6;display:none;}
+  .feedback.show{display:block;}
+  .feedback.correct{background:var(--green-light);border:1.5px solid var(--green);color:var(--green);}
+  .feedback.wrong{background:var(--red-light);border:1.5px solid var(--red);color:var(--red);}
+  .feedback strong{display:block;margin-bottom:2px;font-size:.92rem;}
+
+  /* explanation box (inside feedback) */
+  .explain-box{margin-top:10px;padding:10px 12px;background:rgba(255,255,255,.7);border-radius:7px;color:var(--ink);font-size:.85rem;line-height:1.75;}
+  .explain-label{display:inline-block;font-size:.68rem;font-weight:700;background:var(--ink);color:#fff;padding:2px 8px;border-radius:4px;margin-bottom:6px;letter-spacing:.08em;}
+
+  /* nav bar */
+  .nav-bar{display:flex;gap:8px;align-items:center;}
+  .nav-bar .btn-prev,.nav-bar .btn-next{flex:1;}
+  .btn-end{background:var(--red);color:#fff;border:none;padding:11px 18px;border-radius:9px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .15s;min-height:44px;}
+  .btn-end:hover{background:#a0231a;}
+  .btn-nav{background:var(--surface);color:var(--ink);border:1.5px solid var(--border);padding:11px 18px;border-radius:9px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .15s;min-height:44px;width:100%;}
+  .btn-nav:hover:not(:disabled){border-color:var(--ink);}
+  .btn-nav:disabled{opacity:.35;cursor:not-allowed;}
+  .btn-primary-full{background:var(--accent);color:#fff;border:none;padding:13px 24px;border-radius:9px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;width:100%;transition:all .15s;min-height:48px;}
+  .btn-primary-full:hover{background:#a8431a;}
+
+  /* ── Modal ── */
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .modal{background:var(--surface);border-radius:14px;padding:28px 24px;max-width:360px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.18);}
+  .modal h3{font-size:1rem;font-weight:700;margin-bottom:8px;}
+  .modal p{font-size:.88rem;color:var(--ink-light);line-height:1.7;margin-bottom:20px;}
+  .modal-actions{display:flex;gap:10px;}
+  .btn-modal-cancel{flex:1;background:transparent;border:1.5px solid var(--border);color:var(--ink);padding:10px;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;}
+  .btn-modal-confirm{flex:1;background:var(--red);color:#fff;border:none;padding:10px;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;}
+
+  /* ── Result screen ── */
+  .result-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:32px 24px;margin-top:20px;}
+  .score-circle{width:130px;height:130px;border-radius:50%;border:6px solid var(--accent);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 20px;}
+  .score-num{font-family:'Space Mono',monospace;font-size:2.2rem;font-weight:700;color:var(--accent);line-height:1;}
+  .score-denom{font-family:'Space Mono',monospace;font-size:.78rem;color:var(--ink-light);}
+  .result-stats{display:flex;justify-content:center;gap:28px;margin-bottom:24px;flex-wrap:wrap;}
+  .rs{display:flex;flex-direction:column;align-items:center;gap:3px;}
+  .rs-val{font-family:'Space Mono',monospace;font-size:1.3rem;font-weight:700;}
+  .rs-label{font-size:.7rem;color:var(--ink-light);}
+  .rs-val.green{color:var(--green);} .rs-val.red{color:var(--red);}
+  .result-msg{text-align:center;font-size:.88rem;color:var(--ink-light);margin-bottom:24px;line-height:1.6;}
+
+  /* review list */
+  .review-title{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-light);margin-bottom:10px;}
+  .review-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;margin-bottom:6px;font-size:.85rem;}
+  .review-item.correct-item{background:var(--green-light);}
+  .review-item.wrong-item{background:var(--red-light);}
+  .review-item.skipped-item{background:var(--yellow-light);}
+  .review-num{font-family:'Space Mono',monospace;font-size:.72rem;min-width:24px;color:var(--ink-light);}
+  .review-stem{flex:1;line-height:1.5;font-size:.82rem;}
+  .review-ans{font-family:'Space Mono',monospace;font-size:.78rem;font-weight:700;}
+  .review-ans.correct-item{color:var(--green);}
+  .review-ans.wrong-item{color:var(--red);}
+
+  /* toast */
+  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--ink);color:#fff;padding:8px 16px;border-radius:8px;font-size:.82rem;opacity:0;transition:all .2s;pointer-events:none;z-index:200;white-space:nowrap;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<header>
+  <h1>📖 財務報表分析</h1>
+  <span class="hdr-score" id="hdr-info"></span>
+</header>
+
+<div class="app">
+
+  <!-- ── Start Screen ── -->
+  <div class="screen active" id="screen-start">
+    <div class="start-card">
+      <h2>考題練習</h2>
+      <p>共 40 題選擇題，每題 2.5 分，滿分 100 分。<br>作答中可自由上一題／下一題，隨時可結束並計算總分。</p>
+      <div class="info-row">
+        <div class="info-item"><span class="info-val">40</span><span class="info-label">題數</span></div>
+        <div class="info-item"><span class="info-val">2.5</span><span class="info-label">每題分數</span></div>
+        <div class="info-item"><span class="info-val">100</span><span class="info-label">滿分</span></div>
+      </div>
+
+      <div class="filter-section">
+        <div class="filter-label">選擇章節</div>
+        <div class="filter-row">
+          <button class="filter-btn active" data-ch="all" onclick="setChFilter(this)">全部</button>
+          <button class="filter-btn" data-ch="ch4" onclick="setChFilter(this)">第四章 償債能力</button>
+          <button class="filter-btn" data-ch="ch5" onclick="setChFilter(this)">第五章 現金流量（課本）</button>
+          <button class="filter-btn" data-ch="ch-func" onclick="setChFilter(this)">第五章 現金流量（函授）</button>
+          <button class="filter-btn" data-ch="profit" onclick="setChFilter(this)">獲利能力分析</button>
+        </div>
+      </div>
+
+      <div class="shuffle-row">
+        <label><input type="radio" name="shuffle" value="shuffle" checked> 隨機出題</label>
+        <label><input type="radio" name="shuffle" value="order"> 依序出題</label>
+      </div>
+
+      <button class="btn-primary-full" onclick="startQuiz()">開始練習 →</button>
+    </div>
+  </div>
+
+  <!-- ── Quiz Screen ── -->
+  <div class="screen" id="screen-quiz">
+    <div class="progress-bar-wrap">
+      <div class="progress-info">
+        <span class="progress-label" id="prog-label">第 1 題 / 共 40 題</span>
+        <span class="progress-answered" id="prog-answered">已答 0 題</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="dot-map" id="dot-map"></div>
+
+    <div class="q-card">
+      <div id="q-chapter-badge"></div>
+      <div class="q-stem" id="q-stem"></div>
+      <div class="mc-options" id="mc-options"></div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+
+    <div class="nav-bar">
+      <button class="btn-nav" id="btn-prev" onclick="goPrev()">← 上一題</button>
+      <button class="btn-end" onclick="confirmEnd()">結束</button>
+      <button class="btn-nav" id="btn-next" onclick="goNext()">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- ── Result Screen ── -->
+  <div class="screen" id="screen-result">
+    <div class="result-card">
+      <div class="score-circle">
+        <span class="score-num" id="res-score">0</span>
+        <span class="score-denom">/ 100 分</span>
+      </div>
+      <div class="result-stats">
+        <div class="rs"><span class="rs-val green" id="res-correct">0</span><span class="rs-label">答對</span></div>
+        <div class="rs"><span class="rs-val red" id="res-wrong">0</span><span class="rs-label">答錯</span></div>
+        <div class="rs"><span class="rs-val" id="res-skipped" style="color:var(--yellow)">0</span><span class="rs-label">未作答</span></div>
+      </div>
+      <div class="result-msg" id="res-msg"></div>
+      <button class="btn-primary-full" onclick="restartQuiz()" style="margin-bottom:20px;">再練一次</button>
+
+      <div class="review-title">作答明細</div>
+      <div id="review-list"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal-bg" id="modal" style="display:none">
+  <div class="modal">
+    <h3>確定要結束嗎？</h3>
+    <p id="modal-msg"></p>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeModal()">繼續作答</button>
+      <button class="btn-modal-confirm" onclick="endQuiz()">結束並計分</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const allQuestions = [
+  {id:1,ch:'ch4',chName:'第四章 償債能力',stem:'A公司的流動資產大於流動負債，若A公司以現金償還應付帳款時，會產生什麼結果？',options:{A:'流動比率增加',B:'流動比率減少',C:'營運資金增加',D:'營運資金減少'},answer:'A',
+   explain:'流動比率＝流動資產÷流動負債。當分子分母同時減少相同金額時，原本「大於 1」的比率會被放大。例如 200/100=2，各減 50 後變成 150/50=3，比率增加。營運資金（流動資產－流動負債）金額不變。'},
+  {id:2,ch:'ch4',chName:'第四章 償債能力',stem:'假設B公司的流動比率為192%，下列哪種方案可以提升公司的流動比率？',options:{A:'賒購存貨',B:'應收款項收現',C:'以現金購買存貨',D:'以發行長期負債所得金額償還短期負債'},answer:'D',
+   explain:'發行長期負債（非流動負債）所得現金（流動資產不變），用來償還短期負債（流動負債減少），分母變小，流動比率提升。其他選項：A、B、C 都不會讓比率提高（A 同增、B 流動資產內部移轉、C 流動資產內部移轉）。'},
+  {id:3,ch:'ch4',chName:'第四章 償債能力',stem:'當公司的流動比率很高，代表這家公司：',options:{A:'股東投入之資本很多',B:'有較佳的短期償債能力',C:'財務狀況優良',D:'營業成果良好'},answer:'B',
+   explain:'流動比率衡量「短期償債能力」，比率越高代表流動資產足以支應流動負債。但不代表財務狀況優良或營業成果良好（可能是存貨堆積、現金閒置）。'},
+  {id:4,ch:'ch4',chName:'第四章 償債能力',stem:'下列何者為酸性測驗（速動比率）之公式：',options:{A:'流動資產除以流動負債',B:'速動資產除以速動負債',C:'速動資產除以流動負債',D:'速動負債除以流動資產'},answer:'C',
+   explain:'速動比率（酸性測驗）＝速動資產÷流動負債。速動資產＝流動資產－存貨－預付款項，剔除流動性較低的項目，更嚴格地衡量短期償債能力。'},
+  {id:5,ch:'ch4',chName:'第四章 償債能力',stem:'公司之稅前淨利$300,000，利息保障倍數為5倍，則稅前息前淨利為何？',options:{A:'$375,000',B:'$350,000',C:'$250,000',D:'$225,000'},answer:'A',
+   explain:'利息保障倍數＝(稅前淨利＋利息支出)÷利息支出 = 5。設利息支出為 X，則 (300,000+X)/X = 5 → 300,000+X = 5X → X = 75,000。稅前息前淨利 = 300,000 + 75,000 = $375,000。'},
+  {id:6,ch:'ch4',chName:'第四章 償債能力',stem:'公司之稅前淨利$200,000，利息支出$25,000，則利息保障倍數為何？',options:{A:'10倍',B:'9倍',C:'8倍',D:'7倍'},answer:'B',
+   explain:'利息保障倍數 = (稅前淨利＋利息支出)÷利息支出 = (200,000＋25,000)÷25,000 = 225,000÷25,000 = 9 倍。'},
+  {id:7,ch:'ch4',chName:'第四章 償債能力',stem:'下列何項財務比率可以用來評估公司的長期償債能力？',options:{A:'流動比率',B:'應收帳款週轉率',C:'負債權益比',D:'總資產週轉率'},answer:'C',
+   explain:'負債權益比＝總負債÷股東權益，衡量公司「長期」的財務結構與償債能力。流動比率屬於短期償債能力；應收帳款週轉率、總資產週轉率屬於經營效率指標。'},
+  {id:8,ch:'ch4',chName:'第四章 償債能力',stem:'C公司的資產總額為$6,000,000，權益總額為$3,500,000，則其負債比率為？',options:{A:'42%',B:'58%',C:'171%',D:'240%'},answer:'A',
+   explain:'資產 = 負債 + 權益，所以負債 = 6,000,000 − 3,500,000 = 2,500,000。負債比率 = 負債÷資產 = 2,500,000÷6,000,000 ≈ 41.67% ≈ 42%。'},
+  {id:9,ch:'ch4',chName:'第四章 償債能力',stem:'D公司的負債權益比為60%，則D公司的負債比率為？',options:{A:'72.5%',B:'67.5%',C:'62.5%',D:'37.5%'},answer:'D',
+   explain:'負債權益比 L/E = 0.6，設 E=1，則 L=0.6，A=L+E=1.6。負債比率 L/A = 0.6/1.6 = 0.375 = 37.5%。'},
+  {id:10,ch:'ch4',chName:'第四章 償債能力',stem:'E公司的負債比率等於0.67，則E公司的負債權益比為？',options:{A:'3.03',B:'2.97',C:'2.03',D:'1.03'},answer:'C',
+   explain:'負債比率 L/A = 0.67，所以 E/A = 1 − 0.67 = 0.33。負債權益比 L/E = (L/A) ÷ (E/A) = 0.67÷0.33 ≈ 2.03。'},
+  {id:11,ch:'ch5',chName:'第五章 現金流量（課本）',stem:'A公司以$1,000,000價格發行公司債，由B公司購入，此項交易在兩家公司分別被列為：',options:{A:'A公司：投資活動，B公司：籌資活動',B:'A公司：籌資活動，B公司：投資活動',C:'A、B公司皆為投資活動',D:'A、B公司皆為籌資活動'},answer:'B',
+   explain:'A 公司「發行」公司債→透過舉債籌集資金，屬於籌資活動。B 公司「購入」公司債→拿錢去投資金融資產，屬於投資活動。發行方=籌資、購入方=投資。'},
+  {id:12,ch:'ch5',chName:'第五章 現金流量（課本）',stem:'發放現金股利在現金流量表中，被歸類為：',options:{A:'營業活動',B:'投資活動',C:'籌資活動',D:'股息活動'},answer:'C',
+   explain:'發放現金股利是公司對股東的資金回饋，屬於資本結構相關的活動，歸類為籌資活動的現金流出。（註：收到股利則可能歸類為營業活動。）'},
+  {id:13,ch:'ch5',chName:'第五章 現金流量（課本）',stem:'現金流量表中哪一個活動的現金流量是最能夠用來評估企業繼續經營能力的資訊？',options:{A:'來自營業活動的現金流量',B:'來自投資活動的現金流量',C:'來自籌資活動的現金流量',D:'不影響現金的投資籌資活動'},answer:'A',
+   explain:'營業活動是企業的「主要本業」，其現金流量代表公司本業創造現金的能力。長期為正才能持續經營，是評估永續經營能力的關鍵指標。'},
+  {id:14,ch:'ch5',chName:'第五章 現金流量（課本）',stem:'下列哪一項現金流入屬於籌資活動？',options:{A:'銷售商品',B:'應收帳款收現',C:'現金增資',D:'利息收入'},answer:'C',
+   explain:'現金增資（發行新股取得現金）是調整公司資本結構的活動，屬於籌資活動。銷售商品、應收帳款收現屬於營業活動；利息收入通常歸營業活動。'},
+  {id:15,ch:'ch5',chName:'第五章 現金流量（課本）',stem:'下列哪一項現金流入屬於投資活動？',options:{A:'佣金收入',B:'處分資產收到現金',C:'向銀行借款',D:'股利收入'},answer:'B',
+   explain:'處分（出售）資產取得現金，屬於投資活動的現金流入。佣金收入屬營業活動；向銀行借款屬籌資活動；股利收入通常歸營業活動。'},
+  {id:16,ch:'ch5',chName:'第五章 現金流量（課本）',stem:'下列哪一個財務比率是從現金流量的角度來評估公司的短期償債能力？',options:{A:'速動比率',B:'現金流量允當比率',C:'現金再投資比率',D:'現金流量比率'},answer:'D',
+   explain:'現金流量比率 = 營業活動現金流量÷流動負債，從「實際現金產生能力」衡量短期償債能力。速動比率雖也是短期償債指標，但屬於資產負債角度而非現金流量角度。'},
+  {id:17,ch:'ch5',chName:'第五章 現金流量（課本）',stem:'A公司的現金流量比率為243%，而所屬產業平均現金流量比率為202%，請問此透露什麼資訊？',options:{A:'A公司的財務體質相當健全',B:'A公司有現金不足的疑慮',C:'A公司的獲利能力相當好',D:'A公司的經營能力不佳'},answer:'A',
+   explain:'現金流量比率高於產業平均，代表公司營業活動產生的現金能輕鬆支應流動負債，財務體質健全。注意：此比率反映「現金償債能力」，不是獲利能力或經營能力。'},
+  {id:18,ch:'ch5',chName:'第五章 現金流量（課本）',stem:'用來衡量一家企業由營業活動所產生的現金流量能否支應公司購買存貨、資本支出和支出現金股利的比率為？',options:{A:'現金流量比率',B:'現金流量允當比率',C:'現金再投資比率',D:'自由現金流量'},answer:'B',
+   explain:'現金流量允當比率衡量「最近五年營業現金流量」是否足以支應「資本支出+存貨增加+現金股利」。比率≥1 代表公司不需向外舉債或增資也能維持營運。'},
+  {id:19,ch:'ch5',chName:'第五章 現金流量（課本）',stem:'下列有關「現金再投資比率」的敘述，何者正確？',options:{A:'現金再投資比率愈高，表示公司的成長潛力愈大',B:'現金再投資比率愈高，表示公司當年度賺的錢愈多',C:'現金再投資比率愈高，表示公司自由現金流量愈低',D:'現金再投資比率愈高，表示公司投資金額偏低'},answer:'A',
+   explain:'現金再投資比率＝(營業現金流量−現金股利)÷(總資產)。比率愈高，表示公司保留現金再投資於長期資產的比例愈高，代表企業有持續擴張、成長潛力。'},
+  {id:20,ch:'ch5',chName:'第五章 現金流量（課本）',stem:'下列對「自由現金流量」的敘述，何者正確？',options:{A:'稅後純益減除必要投資支出',B:'用來衡量每一股普通股股東可以分得的營業活動現金流量金額',C:'用來衡量企業營業活動所產生的現金流量是否能支應利息支出',D:'營業活動淨現金流量扣除必要投資支出後，所剩餘的現金部位'},answer:'D',
+   explain:'自由現金流量 = 營業活動淨現金流量 − 必要的資本支出。代表公司在維持營運所需投資後，「真正可自由運用」的現金，可用於發股利、還債或併購。'},
+  {id:21,ch:'ch-func',chName:'第五章 現金流量（函授）',stem:'下列何者最不可能被列為「營業活動」的現金流量？',options:{A:'購置生產用機器設備',B:'支付員工薪資',C:'支付供應商原物料款項',D:'向客戶收取銷貨款項'},answer:'A',
+   explain:'購置機器設備屬於長期資產的取得，列為「投資活動」現金流出。其他選項（薪資、原物料、銷貨收款）都是日常營運產生的現金流，屬於營業活動。'},
+  {id:22,ch:'ch-func',chName:'第五章 現金流量（函授）',stem:'企業出售不動產、廠房及設備所取得的現金，應列為下列何種現金流量？',options:{A:'營業活動現金流入',B:'投資活動現金流入',C:'籌資活動現金流入',D:'營業活動現金流出'},answer:'B',
+   explain:'處分長期資產（不動產、廠房及設備）取得的現金，屬於投資活動的現金流入。投資活動包含「取得或處分長期資產」的現金往來。'},
+  {id:23,ch:'ch-func',chName:'第五章 現金流量（函授）',stem:'下列哪一項交易會造成「籌資活動」的現金流入？',options:{A:'現金增資發行新股',B:'償還銀行借款',C:'發放現金股利',D:'購買原物料'},answer:'A',
+   explain:'現金增資發行新股是向股東募集資金，屬於籌資活動現金流入。償還借款、發放股利是籌資活動「流出」；購買原物料是營業活動。'},
+  {id:24,ch:'ch-func',chName:'第五章 現金流量（函授）',stem:'關於營業活動現金流量之直接法與間接法，下列何者正確？',options:{A:'直接法以稅後淨利為起點',B:'間接法直接列示現金收付',C:'直接法不利於預測現金流量',D:'間接法可調節淨利與營業現金流量差異'},answer:'D',
+   explain:'間接法以稅後淨利為起點，透過調整非現金項目（如折舊）和應計項目，得出營業活動現金流量，能清楚「調節淨利與現金流量的差異」。直接法則直接列示現金收付項目。'},
+  {id:25,ch:'ch-func',chName:'第五章 現金流量（函授）',stem:'下列何者會影響現金流量表與資產負債表，但不影響損益表？',options:{A:'支付員工薪資',B:'提列折舊費用',C:'償還銀行借款本金',D:'銷售商品收現'},answer:'C',
+   explain:'償還借款本金：現金減少（影響現金流量表）、負債減少（影響資產負債表），但本金不屬於費用，不影響損益表。其他選項都會進入損益表（薪資費用、折舊費用、銷貨收入）。'},
+  {id:26,ch:'ch-func',chName:'第五章 現金流量（函授）',stem:'某公司本期銷貨收入1,200萬元，期初應收帳款200萬元，期末應收帳款260萬元，則本期自客戶收取之現金為多少？',options:{A:'840萬元',B:'900萬元',C:'940萬元',D:'1,140萬元'},answer:'D',
+   explain:'收現金額 = 銷貨收入 − 應收帳款增加數 = 1,200 − (260−200) = 1,200 − 60 = 1,140 萬元。應收帳款增加表示部分銷貨還沒收到現金，要扣除。'},
+  {id:27,ch:'ch-func',chName:'第五章 現金流量（函授）',stem:'某公司本期支付供應商貨款700萬元，期初應付帳款180萬元，期末應付帳款230萬元，則本期購貨金額為多少？',options:{A:'650萬元',B:'700萬元',C:'750萬元',D:'810萬元'},answer:'C',
+   explain:'購貨金額 = 付現金額 + 應付帳款增加數 = 700 + (230−180) = 700 + 50 = 750 萬元。應付帳款增加表示有部分購貨還沒付錢，要加回去。'},
+  {id:28,ch:'ch-func',chName:'第五章 現金流量（函授）',stem:'某公司本期購入設備支付現金500萬元，另以長期借款購置設備300萬元，則投資活動之現金流出為多少？',options:{A:'300萬元',B:'500萬元',C:'800萬元',D:'0萬元'},answer:'B',
+   explain:'現金流量表只記錄「有實際現金流動」的交易。以長期借款購置設備是不影響現金的投資籌資活動（須揭露但不計入流量），所以投資活動現金流出僅 500 萬元。'},
+  {id:29,ch:'ch-func',chName:'第五章 現金流量（函授）',stem:'下列哪一項交易「不會」影響當期現金流量表，但「會」影響資產負債表？',options:{A:'提列折舊費用',B:'宣告但尚未支付現金股利',C:'現金支付員工薪資',D:'向客戶收取銷貨款項'},answer:'B',
+   explain:'宣告但未支付的現金股利：負債增加（應付股利）、權益減少（保留盈餘減少），影響資產負債表；但因為「還沒付現金」，所以不影響現金流量表。'},
+  {id:30,ch:'ch-func',chName:'第五章 現金流量（函授）',stem:'若企業營業活動現金流量長期為正，而投資活動現金流量長期為負，最可能代表：',options:{A:'企業營運惡化',B:'企業現金不足',C:'企業持續進行資本投資',D:'企業大量發放股利'},answer:'C',
+   explain:'營業活動正值＝本業賺錢；投資活動負值＝持續支出購買長期資產。這是健康成長型企業的典型現金流型態，代表公司用本業賺的錢持續擴張投資。'},
+  {id:31,ch:'profit',chName:'獲利能力分析',stem:'已知公司之銷貨毛利率為20%，銷貨成本為$400,000，可以得知銷貨毛利為：',options:{A:'$80,000',B:'$100,000',C:'$120,000',D:'$50,000'},answer:'B',
+   explain:'毛利率 = 毛利÷銷貨收入 = 20%，所以銷貨成本占比 = 80%。銷貨收入 = 400,000÷80% = 500,000。銷貨毛利 = 500,000 − 400,000 = $100,000（或：500,000×20%=100,000）。'},
+  {id:32,ch:'profit',chName:'獲利能力分析',stem:'相較於去年，A公司今年的銷貨增加，但其毛利率卻減少，可能的原因是？',options:{A:'銷貨成本增加',B:'營業費用大增',C:'今年度有高額的營業外損失',D:'今年度有高額的營業外利益'},answer:'A',
+   explain:'毛利率 = (銷貨收入−銷貨成本)÷銷貨收入。「毛利率」只受銷貨收入與銷貨成本影響。銷貨成本增加得比銷貨收入更快，毛利率就會下降。營業費用、營業外項目不影響毛利率。'},
+  {id:33,ch:'profit',chName:'獲利能力分析',stem:'計算普通股每股盈餘時，分母應為：',options:{A:'年底已發行股數',B:'年底流通在外股數',C:'全年度加權平均已發行股數',D:'全年度加權平均流通在外股數'},answer:'D',
+   explain:'EPS 計算需以「加權平均流通在外股數」為分母，因為股數會隨年度中的增資、買回庫藏股等變動而改變，加權平均才能反映實際每股的盈餘。庫藏股不算流通在外。'},
+  {id:34,ch:'profit',chName:'獲利能力分析',stem:'稅後純益除以營業收入的比率稱為：',options:{A:'本利比',B:'股東權益報酬率',C:'總資產報酬率',D:'純益率'},answer:'D',
+   explain:'純益率（淨利率）= 稅後純益÷營業收入，代表每一元營業收入能轉化為多少純益。股東權益報酬率分母是股東權益；總資產報酬率分母是總資產。'},
+  {id:35,ch:'profit',chName:'獲利能力分析',stem:'計算一家公司的損益兩平銷售單位時，不需考慮下列哪一個項目？',options:{A:'單位售價',B:'單位變動成本',C:'固定成本',D:'毛利率'},answer:'D',
+   explain:'損益兩平銷售量 = 固定成本÷(單位售價−單位變動成本) = 固定成本÷單位邊際貢獻。只需要單位售價、單位變動成本、固定成本三項即可，不需毛利率。'},
+  {id:36,ch:'profit',chName:'獲利能力分析',stem:'B公司的稅後純益為$6,000,000，已知毛利率為20%，稅後純益率為10%，則B公司的銷貨成本為？',options:{A:'$54,000,000',B:'$48,000,000',C:'$40,000,000',D:'$35,000,000'},answer:'B',
+   explain:'稅後純益率 = 稅後純益÷銷貨收入 = 10%，所以銷貨收入 = 6,000,000÷10% = 60,000,000。毛利率 20% → 銷貨成本占比 80% → 銷貨成本 = 60,000,000×80% = $48,000,000。'},
+  {id:37,ch:'profit',chName:'獲利能力分析',stem:'哪一個可以反映公司股東獲利的財務指標？',options:{A:'每股股利',B:'負債比率',C:'股東權益報酬率',D:'每股淨值'},answer:'C',
+   explain:'股東權益報酬率（ROE）= 稅後純益÷平均股東權益，直接衡量「股東投入資金的獲利能力」，是反映股東獲利最重要的指標。每股股利只是分配；每股淨值是帳面價值；負債比率是財務結構。'},
+  {id:38,ch:'profit',chName:'獲利能力分析',stem:'股東權益報酬率之計算公式為：',options:{A:'毛利除以平均普通股股東權益',B:'營業利益除以平均普通股股東權益',C:'稅後純益除以平均普通股股東權益',D:'平均普通股股東權益除以淨利'},answer:'C',
+   explain:'股東權益報酬率（ROE）= 稅後純益÷平均普通股股東權益。分子用「稅後純益」（最終歸屬股東的利潤），分母用平均值（兼顧期初期末變動）。'},
+  {id:39,ch:'profit',chName:'獲利能力分析',stem:'C公司在銷售淨額為$10,000,000，總資產為$40,000,000，而純益率為25%，試問C公司的資產報酬率為？',options:{A:'8%',B:'6.25%',C:'5.5%',D:'4%'},answer:'B',
+   explain:'稅後純益 = 銷貨收入×純益率 = 10,000,000×25% = 2,500,000。資產報酬率（ROA）= 稅後純益÷總資產 = 2,500,000÷40,000,000 = 6.25%。'},
+  {id:40,ch:'profit',chName:'獲利能力分析',stem:'D公司的負債比率為40%，總資產週轉率為3.5，股東權益報酬率為12%，試問D公司的純益率為？',options:{A:'2.06%',B:'5.37%',C:'8.39%',D:'12.44%'},answer:'A',
+   explain:'使用杜邦分析：ROE = 純益率 × 總資產週轉率 × 權益乘數。權益乘數 = 1÷(1−負債比率) = 1÷(1−0.4) = 1/0.6 ≈ 1.667。純益率 = ROE÷(總資產週轉率×權益乘數) = 12%÷(3.5×1.667) = 12%÷5.833 ≈ 2.06%。'},
+];
+
+// ── State ──
+let queue=[], userAnswers=[], curIdx=0, activeChFilter='all';
+
+function chClass(ch){return {ch4:'ch4',ch5:'ch5','ch-func':'ch-func',profit:'ch-profit'}[ch]||'ch4';}
+function toast(msg){const e=document.getElementById('toast');e.textContent=msg;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2000);}
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+function setChFilter(btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  activeChFilter=btn.dataset.ch;
+}
+
+function startQuiz(){
+  const doShuffle=document.querySelector('input[name="shuffle"]:checked').value==='shuffle';
+  let pool=allQuestions.filter(q=>activeChFilter==='all'||q.ch===activeChFilter);
+  if(!pool.length){toast('該章節沒有題目');return;}
+  queue=doShuffle?shuffle([...pool]):[...pool];
+  userAnswers=new Array(queue.length).fill(null);
+  curIdx=0;
+  buildDotMap();
+  renderQ();
+  showScreen('screen-quiz');
+  updateHeader();
+}
+
+function updateHeader(){
+  const answered=userAnswers.filter(a=>a!==null).length;
+  document.getElementById('hdr-info').textContent=`已答 ${answered} / ${queue.length}`;
+}
+
+function buildDotMap(){
+  const map=document.getElementById('dot-map');
+  map.innerHTML=queue.map((_,i)=>`<div class="dot" id="dot-${i}" onclick="jumpTo(${i})" title="第${i+1}題"></div>`).join('');
+}
+
+function updateDots(){
+  queue.forEach((_,i)=>{
+    const d=document.getElementById('dot-'+i);
+    d.className='dot';
+    if(userAnswers[i]!==null) d.classList.add('answered');
+    if(i===curIdx) d.classList.add('current');
+  });
+}
+
+function renderQ(){
+  const q=queue[curIdx];
+  const total=queue.length;
+  document.getElementById('prog-label').textContent=`第 ${curIdx+1} 題 / 共 ${total} 題`;
+  const answered=userAnswers.filter(a=>a!==null).length;
+  document.getElementById('prog-answered').textContent=`已答 ${answered} 題`;
+  document.getElementById('prog-fill').style.width=(answered/total*100)+'%';
+  document.getElementById('q-chapter-badge').innerHTML=`<span class="q-chapter-badge ${chClass(q.ch)}">${q.chName}</span>`;
+  document.getElementById('q-stem').textContent=q.stem;
+  const ua=userAnswers[curIdx];
+  const isAnswered=ua!==null;
+  const opts=document.getElementById('mc-options');
+  opts.innerHTML=Object.keys(q.options).map(k=>{
+    let cls='mc-opt';
+    if(isAnswered){
+      cls+=' locked';
+      if(k===q.answer) cls+=' correct';
+      else if(k===ua) cls+=' wrong';
+    } else if(ua===k){
+      cls+=' selected';
+    }
+    return `<button class="${cls}" onclick="selectAns('${k}')">
+      <span class="opt-key">${k}</span>
+      <span>${q.options[k]}</span>
+    </button>`;
+  }).join('');
+  // feedback
+  const fb=document.getElementById('feedback');
+  if(isAnswered){
+    if(ua===q.answer){
+      fb.className='feedback show correct';
+      fb.innerHTML=`<strong>✓ 答對了！</strong><div class="explain-box"><span class="explain-label">解析</span>${q.explain}</div>`;
+    } else {
+      fb.className='feedback show wrong';
+      fb.innerHTML=`<strong>✗ 答錯了</strong>正確答案是 <b>${q.answer}：${q.options[q.answer]}</b><div class="explain-box"><span class="explain-label">解析</span>${q.explain}</div>`;
+    }
+  } else {
+    fb.className='feedback';
+    fb.innerHTML='';
+  }
+  document.getElementById('btn-prev').disabled=curIdx===0;
+  document.getElementById('btn-next').disabled=curIdx===queue.length-1;
+  updateDots();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function selectAns(k){
+  // 已答過就不能再改（要先看正確答案了）
+  if(userAnswers[curIdx]!==null) return;
+  userAnswers[curIdx]=k;
+  renderQ();
+  updateHeader();
+}
+
+function goPrev(){if(curIdx>0){curIdx--;renderQ();}}
+function goNext(){if(curIdx<queue.length-1){curIdx++;renderQ();}}
+function jumpTo(i){curIdx=i;renderQ();}
+
+function confirmEnd(){
+  const answered=userAnswers.filter(a=>a!==null).length;
+  const unanswered=queue.length-answered;
+  const msg=unanswered>0
+    ? `目前已答 ${answered} 題，還有 ${unanswered} 題未作答（未作答視為 0 分）。\n確定要結束並計算成績嗎？`
+    : `全部 ${queue.length} 題都已作答完畢！\n確定要結束並計算成績嗎？`;
+  document.getElementById('modal-msg').textContent=msg;
+  document.getElementById('modal').style.display='flex';
+}
+function closeModal(){document.getElementById('modal').style.display='none';}
+
+function endQuiz(){
+  closeModal();
+  // calculate
+  let correct=0,wrong=0,skipped=0;
+  queue.forEach((q,i)=>{
+    if(userAnswers[i]===null) skipped++;
+    else if(userAnswers[i]===q.answer) correct++;
+    else wrong++;
+  });
+  const score=(correct*2.5).toFixed(1);
+  document.getElementById('res-score').textContent=score;
+  document.getElementById('res-correct').textContent=correct;
+  document.getElementById('res-wrong').textContent=wrong;
+  document.getElementById('res-skipped').textContent=skipped;
+  const pct=parseFloat(score);
+  const msg=pct===100?'🎉 滿分！完美作答！':pct>=80?'👏 很棒！繼續保持！':pct>=60?'📚 及格了，再加把勁！':'💪 多練幾遍，下次一定更好！';
+  document.getElementById('res-msg').textContent=msg;
+
+  // review list
+  const list=document.getElementById('review-list');
+  list.innerHTML=queue.map((q,i)=>{
+    const ua=userAnswers[i];
+    const isCorrect=ua===q.answer;
+    const isSkip=ua===null;
+    const cls=isSkip?'skipped-item':isCorrect?'correct-item':'wrong-item';
+    const icon=isSkip?'—':isCorrect?'✓':'✗';
+    const ansText=isSkip?'未作答':`你的答案：${ua}　正確：${q.answer}`;
+    return `<div class="review-item ${cls}">
+      <span class="review-num">${String(i+1).padStart(2,'0')}</span>
+      <span class="review-stem">${q.stem.length>40?q.stem.slice(0,40)+'…':q.stem}</span>
+      <span class="review-ans ${cls}">${icon} ${ansText}</span>
+    </div>`;
+  }).join('');
+
+  showScreen('screen-result');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function restartQuiz(){showScreen('screen-start');}
+</script>
+</body>
+</html>

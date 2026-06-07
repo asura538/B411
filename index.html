@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>考題練習｜科目選單</title>
+
+<!-- Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QMQ17LMD1T"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QMQ17LMD1T');
+</script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Space+Mono:wght@400;700&display=swap');
+  :root {
+    --bg:#f5f2eb; --surface:#fffdf8; --border:#d6cfc0;
+    --ink:#2c2416; --ink-light:#7a6f5e;
+    --accent:#c8541a; --accent-light:#f2e8e0;
+    --green:#2d7a4f; --green-light:#e0f0e8;
+    --blue:#1a5fa8; --blue-light:#e0ecf8;
+    --yellow:#e8a020; --yellow-light:#fef5e0;
+    --purple:#7b3fa8; --purple-light:#f0e8f8;
+    --teal:#0d8a8a; --teal-light:#dff1f1;
+    --pink:#c4427a; --pink-light:#fae0eb;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+
+  header{background:var(--ink);color:#fff;padding:18px 24px;text-align:center;}
+  header h1{font-size:1.1rem;font-weight:900;letter-spacing:.1em;margin-bottom:4px;}
+  header p{font-size:.78rem;color:#bbb;letter-spacing:.05em;}
+
+  .app{max-width:760px;margin:0 auto;padding:28px 16px 80px;}
+
+  .intro{text-align:center;margin-bottom:24px;}
+  .intro h2{font-size:1.05rem;font-weight:700;margin-bottom:6px;}
+  .intro p{font-size:.85rem;color:var(--ink-light);line-height:1.7;}
+
+  /* Subject grid */
+  .subject-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+  @media (max-width:480px){.subject-grid{grid-template-columns:repeat(2,1fr);gap:6px;}}
+
+  .subject-card{
+    background:var(--surface);
+    border:1.5px solid var(--border);
+    border-radius:10px;
+    padding:10px 12px 9px;
+    cursor:pointer;
+    transition:all .2s;
+    position:relative;
+    text-align:left;
+    font-family:'Noto Sans TC',sans-serif;
+    color:var(--ink);
+    display:flex;
+    flex-direction:column;
+    min-height:62px;
+  }
+  .subject-card.available:hover{
+    border-color:var(--accent);
+    transform:translateY(-1px);
+    box-shadow:0 3px 10px rgba(200,84,26,.12);
+  }
+  .subject-card.locked{
+    opacity:.55;
+    cursor:not-allowed;
+    background:var(--bg);
+  }
+  .code-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+  .code{font-family:'Space Mono',monospace;font-size:.68rem;font-weight:700;color:var(--ink-light);letter-spacing:.04em;}
+  .status-badge{font-size:.58rem;font-weight:700;padding:1px 6px;border-radius:99px;letter-spacing:.05em;}
+  .badge-ready{background:var(--green-light);color:var(--green);}
+  .badge-soon{background:var(--border);color:var(--ink-light);}
+  .subject-name{font-size:.88rem;font-weight:700;letter-spacing:.02em;margin-bottom:3px;line-height:1.3;}
+  .subject-meta{font-size:.65rem;color:var(--ink-light);margin-top:auto;display:flex;align-items:center;gap:5px;}
+  .arrow{margin-left:auto;font-size:.78rem;color:var(--accent);font-weight:700;}
+  .subject-card.locked .arrow{display:none;}
+
+  /* Color accent stripe on left */
+  .subject-card::before{
+    content:'';
+    position:absolute;
+    left:-1.5px;top:8px;bottom:8px;
+    width:3px;
+    border-radius:99px;
+    background:var(--accent);
+  }
+  .subject-card.c1::before{background:var(--blue);}
+  .subject-card.c2::before{background:var(--purple);}
+  .subject-card.c3::before{background:var(--pink);}
+  .subject-card.c4::before{background:var(--yellow);}
+  .subject-card.c5::before{background:var(--accent);}
+  .subject-card.c6::before{background:var(--teal);}
+  .subject-card.locked::before{background:var(--border);}
+
+  /* Footer note */
+  .footer-note{margin-top:32px;padding:16px;background:var(--surface);border:1.5px dashed var(--border);border-radius:10px;font-size:.78rem;color:var(--ink-light);line-height:1.7;text-align:center;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📚 B411 考題練習</h1>
+  <p>選擇科目開始練習</p>
+</header>
+
+<div class="app">
+
+  <div class="intro">
+    <h2>科目選單</h2>
+    <p>點選下方科目進入該科考題練習</p>
+  </div>
+
+  <div class="subject-grid">
+
+    <!-- 金融市場實務 -->
+    <button class="subject-card c1 locked" disabled>
+      <div class="code-row">
+        <span class="code">8002</span>
+        <span class="status-badge badge-soon">即將推出</span>
+      </div>
+      <div class="subject-name">金融市場實務</div>
+      <div class="subject-meta">題庫建置中</div>
+    </button>
+
+    <!-- 品質管理 -->
+    <a class="subject-card c2 available" href="1034.html" style="text-decoration:none;">
+      <div class="code-row">
+        <span class="code">1034</span>
+        <span class="status-badge badge-ready">✓ 可練習</span>
+      </div>
+      <div class="subject-name">品質管理</div>
+      <div class="subject-meta">
+        <span>6 題問答題</span>
+        <span class="arrow">→</span>
+      </div>
+    </a>
+
+    <!-- 消費者行為 -->
+    <button class="subject-card c3 locked" disabled>
+      <div class="code-row">
+        <span class="code">1038</span>
+        <span class="status-badge badge-soon">即將推出</span>
+      </div>
+      <div class="subject-name">消費者行為</div>
+      <div class="subject-meta">題庫建置中</div>
+    </button>
+
+    <!-- 策略管理 -->
+    <button class="subject-card c4 locked" disabled>
+      <div class="code-row">
+        <span class="code">1025</span>
+        <span class="status-badge badge-soon">即將推出</span>
+      </div>
+      <div class="subject-name">策略管理</div>
+      <div class="subject-meta">題庫建置中</div>
+    </button>
+
+    <!-- 財務報表分析（可用） -->
+    <a class="subject-card c5 available" href="1013.html" style="text-decoration:none;">
+      <div class="code-row">
+        <span class="code">1013</span>
+        <span class="status-badge badge-ready">✓ 可練習</span>
+      </div>
+      <div class="subject-name">財務報表分析</div>
+      <div class="subject-meta">
+        <span>40 題選擇題</span>
+        <span class="arrow">→</span>
+      </div>
+    </a>
+
+    <!-- 總體經濟學 -->
+    <button class="subject-card c6 locked" disabled>
+      <div class="code-row">
+        <span class="code">1007</span>
+        <span class="status-badge badge-soon">即將推出</span>
+      </div>
+      <div class="subject-name">總體經濟學</div>
+      <div class="subject-meta">題庫建置中</div>
+    </button>
+
+  </div>
+
+  <div class="footer-note">
+    💡 之後新增的科目會自動出現在這個選單上
+  </div>
+
+</div>
+
+</body>
+</html>

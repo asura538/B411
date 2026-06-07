@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>品質管理 期末考練習</title>
+
+<!-- Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QMQ17LMD1T"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QMQ17LMD1T');
+</script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+  :root {
+    --bg:#f5f2eb; --surface:#fffdf8; --border:#d6cfc0;
+    --ink:#2c2416; --ink-light:#7a6f5e;
+    --accent:#c8541a; --accent-light:#f2e8e0;
+    --green:#2d7a4f; --green-light:#e0f0e8;
+    --red:#c0392b; --red-light:#fce8e6;
+    --yellow:#e8a020; --yellow-light:#fef5e0;
+    --blue:#1a5fa8; --blue-light:#e0ecf8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+
+  header{background:var(--ink);color:#fff;padding:13px 20px;display:flex;align-items:center;gap:10px;}
+  header h1{font-size:.95rem;font-weight:700;letter-spacing:.04em;flex:1;}
+  .hdr-info{font-family:'Space Mono',monospace;font-size:.8rem;color:#ccc;}
+
+  .app{max-width:720px;margin:0 auto;padding:20px 16px 100px;}
+
+  .screen{display:none;} .screen.active{display:block;}
+
+  /* start */
+  .start-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:32px 24px;text-align:center;margin-top:24px;}
+  .start-card h2{font-size:1.2rem;font-weight:700;margin-bottom:8px;}
+  .start-card p{font-size:.88rem;color:var(--ink-light);line-height:1.7;margin-bottom:24px;}
+  .info-row{display:flex;justify-content:center;gap:32px;margin-bottom:28px;flex-wrap:wrap;}
+  .info-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .info-val{font-family:'Space Mono',monospace;font-size:1.6rem;font-weight:700;color:var(--accent);}
+  .info-label{font-size:.72rem;color:var(--ink-light);}
+
+  .shuffle-row{display:flex;gap:16px;justify-content:center;margin-bottom:20px;}
+  .shuffle-row label{display:flex;align-items:center;gap:6px;font-size:.88rem;cursor:pointer;}
+  .shuffle-row input{accent-color:var(--accent);}
+
+  .btn-primary-full{background:var(--accent);color:#fff;border:none;padding:13px 24px;border-radius:9px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;width:100%;transition:all .15s;min-height:48px;}
+  .btn-primary-full:hover{background:#a8431a;}
+
+  /* quiz */
+  .progress-bar-wrap{margin-bottom:16px;}
+  .progress-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .progress-label{font-family:'Space Mono',monospace;font-size:.78rem;color:var(--ink-light);}
+  .progress-checked{font-size:.75rem;color:var(--ink-light);}
+  .progress-track{width:100%;height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .3s;}
+
+  /* dot map */
+  .dot-map{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px;}
+  .dot{width:22px;height:22px;border-radius:5px;background:var(--border);cursor:pointer;transition:all .15s;border:2px solid transparent;font-size:.65rem;display:flex;align-items:center;justify-content:center;color:var(--ink-light);font-weight:700;font-family:'Space Mono',monospace;}
+  .dot.checked{background:var(--accent-light);border-color:var(--accent);color:var(--accent);}
+  .dot.current{border-color:var(--ink);background:var(--ink);color:#fff;}
+  .dot.checked.current{background:var(--accent);border-color:var(--ink);color:#fff;}
+
+  /* q card */
+  .q-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:24px 22px;margin-bottom:14px;}
+  .q-num-label{font-family:'Space Mono',monospace;font-size:.75rem;color:var(--ink-light);margin-bottom:10px;letter-spacing:.08em;}
+  .q-stem{font-size:1rem;font-weight:600;line-height:1.8;margin-bottom:20px;color:var(--ink);}
+
+  .show-ans-btn{background:var(--blue);color:#fff;border:none;padding:11px 20px;border-radius:9px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;width:100%;min-height:44px;transition:all .15s;}
+  .show-ans-btn:hover{background:#154d8a;}
+  .hide-ans-btn{background:transparent;color:var(--ink-light);border:1.5px solid var(--border);padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:500;cursor:pointer;font-family:'Noto Sans TC',sans-serif;margin-top:10px;}
+  .hide-ans-btn:hover{color:var(--ink);border-color:var(--ink);}
+
+  .answer-box{background:var(--green-light);border:1.5px solid var(--green);border-radius:10px;padding:16px 18px;margin-top:14px;}
+  .answer-label{font-size:.72rem;font-weight:700;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;display:block;}
+  .answer-text{font-size:.9rem;line-height:1.85;color:var(--ink);white-space:pre-wrap;}
+
+  /* nav */
+  .nav-bar{display:flex;gap:8px;align-items:center;margin-top:14px;}
+  .btn-nav{background:var(--surface);color:var(--ink);border:1.5px solid var(--border);padding:11px 14px;border-radius:9px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .15s;min-height:44px;flex:1;}
+  .btn-nav:hover:not(:disabled){border-color:var(--ink);}
+  .btn-nav:disabled{opacity:.35;cursor:not-allowed;}
+  .btn-end{background:var(--red);color:#fff;border:none;padding:11px 18px;border-radius:9px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .15s;min-height:44px;}
+  .btn-end:hover{background:#a0231a;}
+
+  /* modal */
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .modal{background:var(--surface);border-radius:14px;padding:28px 24px;max-width:360px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.18);}
+  .modal h3{font-size:1rem;font-weight:700;margin-bottom:8px;}
+  .modal p{font-size:.88rem;color:var(--ink-light);line-height:1.7;margin-bottom:20px;white-space:pre-line;}
+  .modal-actions{display:flex;gap:10px;}
+  .btn-modal-cancel{flex:1;background:transparent;border:1.5px solid var(--border);color:var(--ink);padding:10px;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;}
+  .btn-modal-confirm{flex:1;background:var(--red);color:#fff;border:none;padding:10px;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;}
+
+  /* result */
+  .result-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:32px 24px;margin-top:20px;text-align:center;}
+  .result-icon{font-size:3rem;margin-bottom:12px;}
+  .result-title{font-size:1.3rem;font-weight:700;margin-bottom:8px;}
+  .result-stats{display:flex;justify-content:center;gap:32px;margin:24px 0;flex-wrap:wrap;}
+  .rs{display:flex;flex-direction:column;align-items:center;gap:3px;}
+  .rs-val{font-family:'Space Mono',monospace;font-size:1.5rem;font-weight:700;color:var(--accent);}
+  .rs-label{font-size:.72rem;color:var(--ink-light);}
+  .result-msg{font-size:.88rem;color:var(--ink-light);margin-bottom:24px;line-height:1.7;}
+</style>
+</head>
+<body>
+<header>
+  <h1>📋 品質管理｜期末考練習</h1>
+  <span class="hdr-info" id="hdr-info"></span>
+</header>
+
+<div class="app">
+
+  <!-- Start -->
+  <div class="screen active" id="screen-start">
+    <div class="start-card">
+      <h2>問答題練習</h2>
+      <p>共 7 題問答題，先思考自己的答案，<br>再點「顯示答案」對照參考解答。</p>
+      <div class="info-row">
+        <div class="info-item"><span class="info-val">7</span><span class="info-label">題數</span></div>
+        <div class="info-item"><span class="info-val">問答</span><span class="info-label">題型</span></div>
+      </div>
+      <div class="shuffle-row">
+        <label><input type="radio" name="shuffle" value="order" checked> 依序出題</label>
+        <label><input type="radio" name="shuffle" value="shuffle"> 隨機出題</label>
+      </div>
+      <button class="btn-primary-full" onclick="startQuiz()">開始練習 →</button>
+    </div>
+  </div>
+
+  <!-- Quiz -->
+  <div class="screen" id="screen-quiz">
+    <div class="progress-bar-wrap">
+      <div class="progress-info">
+        <span class="progress-label" id="prog-label">第 1 題 / 共 7 題</span>
+        <span class="progress-checked" id="prog-checked">已看過 0 題</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="dot-map" id="dot-map"></div>
+
+    <div class="q-card">
+      <div class="q-num-label" id="q-num-label">Q1</div>
+      <div class="q-stem" id="q-stem"></div>
+      <button class="show-ans-btn" id="show-ans-btn" onclick="toggleAnswer()">📖 顯示答案</button>
+      <div id="answer-wrap" style="display:none">
+        <div class="answer-box">
+          <span class="answer-label">參考答案</span>
+          <div class="answer-text" id="answer-text"></div>
+        </div>
+        <button class="hide-ans-btn" onclick="hideAnswer()">隱藏答案</button>
+      </div>
+    </div>
+
+    <div class="nav-bar">
+      <button class="btn-nav" id="btn-prev" onclick="goPrev()">← 上一題</button>
+      <button class="btn-end" onclick="confirmEnd()">結束</button>
+      <button class="btn-nav" id="btn-next" onclick="goNext()">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Result -->
+  <div class="screen" id="screen-result">
+    <div class="result-card">
+      <div class="result-icon">🎓</div>
+      <div class="result-title">練習結束</div>
+      <div class="result-stats">
+        <div class="rs"><span class="rs-val" id="res-total">0</span><span class="rs-label">總題數</span></div>
+        <div class="rs"><span class="rs-val" id="res-checked" style="color:var(--green)">0</span><span class="rs-label">看過答案</span></div>
+        <div class="rs"><span class="rs-val" id="res-skipped" style="color:var(--yellow)">0</span><span class="rs-label">未查看</span></div>
+      </div>
+      <div class="result-msg" id="res-msg"></div>
+      <button class="btn-primary-full" onclick="restartQuiz()">再練一次</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal-bg" id="modal" style="display:none">
+  <div class="modal">
+    <h3>確定要結束嗎？</h3>
+    <p id="modal-msg"></p>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeModal()">繼續練習</button>
+      <button class="btn-modal-confirm" onclick="endQuiz()">確定結束</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const allQuestions = [
+  {
+    id:1,
+    stem:'何謂 QC story，有哪些執行步驟？',
+    answer:'問題之解析與改善歷程法（QC Story），可促使品質改善步驟更加具體的呈現。\n\nQC Story 的製作可包括：\n1. 前言\n2. 題目選定理由\n3. 現況掌握\n4. 活動計畫\n5. 要因分析\n6. 對策訂定與實施\n7. 效果確認\n8. 效果維持\n9. 檢討殘留問題\n10. 今後計畫'
+  },
+  {
+    id:2,
+    stem:'標竿制度可分為哪三類？說明之。',
+    answer:'依企業選擇標竿夥伴之標的，標竿制度的分類可大致區分為三類：\n\n一、內部性標竿\n在企業或關係企業內，由各廠或各部門類似之業務或功能中，找出績效表現最好者為比較之基準，做為改善之標竿。最大優點在於資訊的易取得性，亦不涉及到企業機密的麻煩。\n\n二、外部性標竿（亦稱競爭標竿）\n在相同產業內，由其他公司類似之業務或功能中，找出績效表現最好者為比較之基準，做為改善之標竿。\n\n三、功能／通用性標竿（亦稱最佳實務標竿或流程標竿）\n打破產業界限，由其他相同或相異產業之企業中尋找類似之業務或功能，以績效表現最好者為比較之基準，做為改善之標竿，且幫助業者創造許多極富創意的想法，尋求最佳的作業典範，隨時掌握最新的經營方式。'
+  },
+  {
+    id:3,
+    stem:'何謂品管七大手法，包含哪些？',
+    answer:'解決問題中，品質改善工具的基本角色，是為了幫助企業符合顧客的需求。而「QC 七手法」就是解決品質問題、發掘問題、解析問題的利器。\n\n通常「QC 七手法」是指：\n(1) 特性要因圖\n(2) 層別法\n(3) 查檢表\n(4) 柏拉圖\n(5) 直方圖\n(6) 散布圖\n(7) 管制圖'
+  },
+  {
+    id:4,
+    stem:'品管圈活動透過哪些步驟來進行改善？',
+    answer:'相關步驟如下所述：\n\n一、發掘工作現場的問題，決定活動題目\n二、把握現狀與設定目標\n三、擬定活動之實施計畫\n四、進行解析\n五、擬定與實施對策\n六、確認效果\n七、標準化與維持效果\n八、檢討與反省\n九、發表成果\n十、挑戰下一個活動主題'
+  },
+  {
+    id:5,
+    stem:'持續品質改善在過程方面有哪些 5 種基本的改進方向？',
+    answer:'一、減少資源浪費\n如果使用多於必要的資源就是一種浪費。例如：報告如果發給不需要的人，即浪費要複印和分送的時間、紙張、使用者閱讀的時間，以及檔案的空間。\n\n二、減少錯誤\n大致來說，錯誤是低劣工作水準的象徵。例如：在列印之後發現打字錯誤，就必須要打開檔案，加以更正，然後再重新列印一份新文件。\n\n三、符合或超越下游顧客的期望\n當符合或超越下游顧客的期望，即表示過程已改善。例如：氣體炔焊接得愈好，則所需的磨邊則愈少，即得磨光漆的表面看起來更光滑。\n\n四、讓過程更安全\n一個安全的工作場所就會有較高的生產力。因為損失較少的時間以及較少工人要求工傷賠償。\n\n五、讓過程更滿足作業人員的要求\n增加執行作業人員的滿意度，有時候一點小小的改變，例如：符合人體工學的座椅，就能使作業者的態度大大改變。'
+  },
+  {
+    id:6,
+    stem:'何謂六標準差管理？',
+    answer:'六標準差管理的意義可以從三個角度來解釋：\n\n一、指標（metric）\n六標準差所要達成的品質目標是每百萬個機會中最多只會發生 3.4 個瑕疵。\n\n二、方法（methodology）\n六標準差藉由一套嚴謹的方法與步驟來完成既定的目標，即是：\n- 定義（Define）\n- 衡量（Measure）\n- 分析（Analyze）\n- 改善（Improve）\n- 控制（Control）\n此乃為目前所熟知的 DMAIC。DMAIC 目前被認為是一套改善現有流程的有效方法論。\n\n三、哲學（philosophy）\n六標準差著重於減少流程中的變異，而一切的決策皆以數據為依據，致力於滿足客戶的需求並同時達成財務績效目標。'
+  },
+];
+
+// State
+let queue=[], checked=[], curIdx=0;
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+function startQuiz(){
+  const doShuffle=document.querySelector('input[name="shuffle"]:checked').value==='shuffle';
+  queue=doShuffle?shuffle([...allQuestions]):[...allQuestions];
+  checked=new Array(queue.length).fill(false);
+  curIdx=0;
+  buildDotMap();
+  renderQ();
+  showScreen('screen-quiz');
+  updateHeader();
+}
+
+function updateHeader(){
+  const n=checked.filter(Boolean).length;
+  document.getElementById('hdr-info').textContent=`已看 ${n} / ${queue.length}`;
+}
+
+function buildDotMap(){
+  const map=document.getElementById('dot-map');
+  map.innerHTML=queue.map((_,i)=>`<div class="dot" id="dot-${i}" onclick="jumpTo(${i})" title="第${i+1}題">${i+1}</div>`).join('');
+}
+
+function updateDots(){
+  queue.forEach((_,i)=>{
+    const d=document.getElementById('dot-'+i);
+    d.className='dot';
+    if(checked[i]) d.classList.add('checked');
+    if(i===curIdx) d.classList.add('current');
+  });
+}
+
+function renderQ(){
+  const q=queue[curIdx];
+  const total=queue.length;
+  document.getElementById('prog-label').textContent=`第 ${curIdx+1} 題 / 共 ${total} 題`;
+  const n=checked.filter(Boolean).length;
+  document.getElementById('prog-checked').textContent=`已看過 ${n} 題`;
+  document.getElementById('prog-fill').style.width=(n/total*100)+'%';
+  document.getElementById('q-num-label').textContent=`Q${curIdx+1}（原題號 #${q.id}）`;
+  document.getElementById('q-stem').textContent=q.stem;
+  document.getElementById('answer-text').textContent=q.answer;
+  // hide answer when switching question
+  document.getElementById('answer-wrap').style.display='none';
+  document.getElementById('show-ans-btn').style.display='';
+  document.getElementById('show-ans-btn').textContent='📖 顯示答案';
+  document.getElementById('btn-prev').disabled=curIdx===0;
+  document.getElementById('btn-next').disabled=curIdx===queue.length-1;
+  updateDots();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function toggleAnswer(){
+  document.getElementById('answer-wrap').style.display='block';
+  document.getElementById('show-ans-btn').style.display='none';
+  if(!checked[curIdx]){
+    checked[curIdx]=true;
+    updateHeader();
+    updateDots();
+    const n=checked.filter(Boolean).length;
+    document.getElementById('prog-checked').textContent=`已看過 ${n} 題`;
+    document.getElementById('prog-fill').style.width=(n/queue.length*100)+'%';
+  }
+}
+
+function hideAnswer(){
+  document.getElementById('answer-wrap').style.display='none';
+  document.getElementById('show-ans-btn').style.display='';
+}
+
+function goPrev(){if(curIdx>0){curIdx--;renderQ();}}
+function goNext(){if(curIdx<queue.length-1){curIdx++;renderQ();}}
+function jumpTo(i){curIdx=i;renderQ();}
+
+function confirmEnd(){
+  const n=checked.filter(Boolean).length;
+  const skipped=queue.length-n;
+  const msg=skipped>0
+    ? `目前已看過 ${n} 題，還有 ${skipped} 題沒有查看過答案。\n確定要結束練習嗎？`
+    : `全部 ${queue.length} 題都看過答案了！\n確定要結束練習嗎？`;
+  document.getElementById('modal-msg').textContent=msg;
+  document.getElementById('modal').style.display='flex';
+}
+function closeModal(){document.getElementById('modal').style.display='none';}
+
+function endQuiz(){
+  closeModal();
+  const total=queue.length;
+  const n=checked.filter(Boolean).length;
+  const skipped=total-n;
+  document.getElementById('res-total').textContent=total;
+  document.getElementById('res-checked').textContent=n;
+  document.getElementById('res-skipped').textContent=skipped;
+  const msg=n===total?'👏 全部題目都看過了，準備充分！':n>=total*0.7?'📚 大部分看過了，記得補完剩下的題目！':'💪 還有不少沒看過，要繼續加油喔！';
+  document.getElementById('res-msg').textContent=msg;
+  showScreen('screen-result');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function restartQuiz(){showScreen('screen-start');}
+</script>
+</body>
+</html>
