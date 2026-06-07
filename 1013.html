@@ -237,7 +237,10 @@
         <div class="rs"><span class="rs-val" id="res-skipped" style="color:var(--yellow)">0</span><span class="rs-label">未作答</span></div>
       </div>
       <div class="result-msg" id="res-msg"></div>
-      <button class="btn-primary-full" onclick="restartQuiz()" style="margin-bottom:20px;">再練一次</button>
+      <div style="display:flex;gap:8px;margin-bottom:20px;">
+        <button class="btn-primary-full" onclick="restartQuiz()" style="flex:1;">再練一次</button>
+        <a class="btn-primary-full" href="index.html" style="flex:1;text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;background:var(--surface);color:var(--ink);border:1.5px solid var(--border);">回首頁</a>
+      </div>
 
       <div class="review-title">作答明細</div>
       <div id="review-list"></div>
