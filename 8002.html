@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>金融市場實務 期末考練習</title>
+
+<!-- Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QMQ17LMD1T"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QMQ17LMD1T');
+</script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+  :root {
+    --bg:#f5f2eb; --surface:#fffdf8; --border:#d6cfc0;
+    --ink:#2c2416; --ink-light:#7a6f5e;
+    --accent:#c8541a; --accent-light:#f2e8e0;
+    --green:#2d7a4f; --green-light:#e0f0e8;
+    --red:#c0392b; --red-light:#fce8e6;
+    --yellow:#e8a020; --yellow-light:#fef5e0;
+    --blue:#1a5fa8; --blue-light:#e0ecf8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+
+  header{background:var(--ink);color:#fff;padding:13px 20px;display:flex;align-items:center;gap:10px;}
+  header h1{font-size:.95rem;font-weight:700;letter-spacing:.04em;flex:1;}
+  .hdr-info{font-family:'Space Mono',monospace;font-size:.8rem;color:#ccc;}
+
+  .app{max-width:720px;margin:0 auto;padding:20px 16px 100px;}
+
+  .screen{display:none;} .screen.active{display:block;}
+
+  /* start */
+  .start-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:32px 24px;text-align:center;margin-top:24px;}
+  .start-card h2{font-size:1.2rem;font-weight:700;margin-bottom:8px;}
+  .start-card p{font-size:.88rem;color:var(--ink-light);line-height:1.7;margin-bottom:24px;}
+  .info-row{display:flex;justify-content:center;gap:32px;margin-bottom:28px;flex-wrap:wrap;}
+  .info-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .info-val{font-family:'Space Mono',monospace;font-size:1.6rem;font-weight:700;color:var(--accent);}
+  .info-label{font-size:.72rem;color:var(--ink-light);}
+
+  .shuffle-row{display:flex;gap:16px;justify-content:center;margin-bottom:20px;}
+  .shuffle-row label{display:flex;align-items:center;gap:6px;font-size:.88rem;cursor:pointer;}
+  .shuffle-row input{accent-color:var(--accent);}
+
+  .btn-primary-full{background:var(--accent);color:#fff;border:none;padding:13px 24px;border-radius:9px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;width:100%;transition:all .15s;min-height:48px;}
+  .btn-primary-full:hover{background:#a8431a;}
+
+  /* quiz */
+  .progress-bar-wrap{margin-bottom:16px;}
+  .progress-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .progress-label{font-family:'Space Mono',monospace;font-size:.78rem;color:var(--ink-light);}
+  .progress-checked{font-size:.75rem;color:var(--ink-light);}
+  .progress-track{width:100%;height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .3s;}
+
+  /* dot map */
+  .dot-map{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px;}
+  .dot{width:22px;height:22px;border-radius:5px;background:var(--border);cursor:pointer;transition:all .15s;border:2px solid transparent;font-size:.65rem;display:flex;align-items:center;justify-content:center;color:var(--ink-light);font-weight:700;font-family:'Space Mono',monospace;}
+  .dot.checked{background:var(--accent-light);border-color:var(--accent);color:var(--accent);}
+  .dot.current{border-color:var(--ink);background:var(--ink);color:#fff;}
+  .dot.checked.current{background:var(--accent);border-color:var(--ink);color:#fff;}
+
+  /* q card */
+  .q-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:24px 22px;margin-bottom:14px;}
+  .q-num-label{font-family:'Space Mono',monospace;font-size:.75rem;color:var(--ink-light);margin-bottom:10px;letter-spacing:.08em;}
+  .q-stem{font-size:1rem;font-weight:600;line-height:1.8;margin-bottom:20px;color:var(--ink);}
+
+  .show-ans-btn{background:var(--blue);color:#fff;border:none;padding:11px 20px;border-radius:9px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;width:100%;min-height:44px;transition:all .15s;}
+  .show-ans-btn:hover{background:#154d8a;}
+  .hide-ans-btn{background:transparent;color:var(--ink-light);border:1.5px solid var(--border);padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:500;cursor:pointer;font-family:'Noto Sans TC',sans-serif;margin-top:10px;}
+  .hide-ans-btn:hover{color:var(--ink);border-color:var(--ink);}
+
+  .answer-box{background:var(--green-light);border:1.5px solid var(--green);border-radius:10px;padding:16px 18px;margin-top:14px;}
+  .answer-label{font-size:.72rem;font-weight:700;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;display:block;}
+  .answer-text{font-size:.9rem;line-height:1.85;color:var(--ink);white-space:pre-wrap;}
+
+  /* nav */
+  .nav-bar{display:flex;gap:8px;align-items:center;margin-top:14px;}
+  .btn-nav{background:var(--surface);color:var(--ink);border:1.5px solid var(--border);padding:11px 14px;border-radius:9px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .15s;min-height:44px;flex:1;}
+  .btn-nav:hover:not(:disabled){border-color:var(--ink);}
+  .btn-nav:disabled{opacity:.35;cursor:not-allowed;}
+  .btn-end{background:var(--red);color:#fff;border:none;padding:11px 18px;border-radius:9px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .15s;min-height:44px;}
+  .btn-end:hover{background:#a0231a;}
+
+  /* modal */
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .modal{background:var(--surface);border-radius:14px;padding:28px 24px;max-width:360px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.18);}
+  .modal h3{font-size:1rem;font-weight:700;margin-bottom:8px;}
+  .modal p{font-size:.88rem;color:var(--ink-light);line-height:1.7;margin-bottom:20px;white-space:pre-line;}
+  .modal-actions{display:flex;gap:10px;}
+  .btn-modal-cancel{flex:1;background:transparent;border:1.5px solid var(--border);color:var(--ink);padding:10px;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;}
+  .btn-modal-confirm{flex:1;background:var(--red);color:#fff;border:none;padding:10px;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;}
+
+  /* result */
+  .result-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:32px 24px;margin-top:20px;text-align:center;}
+  .result-icon{font-size:3rem;margin-bottom:12px;}
+  .result-title{font-size:1.3rem;font-weight:700;margin-bottom:8px;}
+  .result-stats{display:flex;justify-content:center;gap:32px;margin:24px 0;flex-wrap:wrap;}
+  .rs{display:flex;flex-direction:column;align-items:center;gap:3px;}
+  .rs-val{font-family:'Space Mono',monospace;font-size:1.5rem;font-weight:700;color:var(--accent);}
+  .rs-label{font-size:.72rem;color:var(--ink-light);}
+  .result-msg{font-size:.88rem;color:var(--ink-light);margin-bottom:24px;line-height:1.7;}
+</style>
+</head>
+<body>
+<header>
+  <h1>💰 金融市場實務｜期末考練習</h1>
+  <span class="hdr-info" id="hdr-info"></span>
+</header>
+
+<div class="app">
+
+  <!-- Start -->
+  <div class="screen active" id="screen-start">
+    <div class="start-card">
+      <h2>問答題練習</h2>
+      <p>共 9 題問答題，先思考自己的答案，<br>再點「顯示答案」對照參考解答。</p>
+      <div class="info-row">
+        <div class="info-item"><span class="info-val">9</span><span class="info-label">題數</span></div>
+        <div class="info-item"><span class="info-val">問答</span><span class="info-label">題型</span></div>
+      </div>
+      <div class="shuffle-row">
+        <label><input type="radio" name="shuffle" value="order" checked> 依序出題</label>
+        <label><input type="radio" name="shuffle" value="shuffle"> 隨機出題</label>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <a class="btn-primary-full" href="index.html" style="flex:1;text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;background:var(--surface);color:var(--ink);border:1.5px solid var(--border);">← 回首頁</a>
+        <button class="btn-primary-full" onclick="startQuiz()" style="flex:1.5;">開始練習 →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz -->
+  <div class="screen" id="screen-quiz">
+    <div class="progress-bar-wrap">
+      <div class="progress-info">
+        <span class="progress-label" id="prog-label">第 1 題 / 共 9 題</span>
+        <span class="progress-checked" id="prog-checked">已看過 0 題</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="dot-map" id="dot-map"></div>
+
+    <div class="q-card">
+      <div class="q-num-label" id="q-num-label">Q1</div>
+      <div class="q-stem" id="q-stem"></div>
+      <button class="show-ans-btn" id="show-ans-btn" onclick="toggleAnswer()">📖 顯示答案</button>
+      <div id="answer-wrap" style="display:none">
+        <div class="answer-box">
+          <span class="answer-label">參考答案</span>
+          <div class="answer-text" id="answer-text"></div>
+        </div>
+        <button class="hide-ans-btn" onclick="hideAnswer()">隱藏答案</button>
+      </div>
+    </div>
+
+    <div class="nav-bar">
+      <button class="btn-nav" id="btn-prev" onclick="goPrev()">← 上一題</button>
+      <button class="btn-end" onclick="confirmEnd()">結束</button>
+      <button class="btn-nav" id="btn-next" onclick="goNext()">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Result -->
+  <div class="screen" id="screen-result">
+    <div class="result-card">
+      <div class="result-icon">🎓</div>
+      <div class="result-title">練習結束</div>
+      <div class="result-stats">
+        <div class="rs"><span class="rs-val" id="res-total">0</span><span class="rs-label">總題數</span></div>
+        <div class="rs"><span class="rs-val" id="res-checked" style="color:var(--green)">0</span><span class="rs-label">看過答案</span></div>
+        <div class="rs"><span class="rs-val" id="res-skipped" style="color:var(--yellow)">0</span><span class="rs-label">未查看</span></div>
+      </div>
+      <div class="result-msg" id="res-msg"></div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-primary-full" onclick="restartQuiz()" style="flex:1;">再練一次</button>
+        <a class="btn-primary-full" href="index.html" style="flex:1;text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;background:var(--surface);color:var(--ink);border:1.5px solid var(--border);">回首頁</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal-bg" id="modal" style="display:none">
+  <div class="modal">
+    <h3>確定要結束嗎？</h3>
+    <p id="modal-msg"></p>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeModal()">繼續練習</button>
+      <button class="btn-modal-confirm" onclick="endQuiz()">確定結束</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const allQuestions = [
+  {
+    id:1,
+    stem:'請問什麼是展望理論？什麼是最大笨蛋理論？',
+    answer:'(一) 展望理論\n為 2002 年經濟學獎得主、心理學教授丹尼爾․卡納曼和莫斯․特沃斯基提出。展望理論有兩個主要重點：\n\n第一：人的效用取決於相對財富而非絕對財富。\n\n第二：人類在相對獲利時是怕風險的（風險趨避者），但是在相對賠錢時是喜歡冒險的；也就是一般人的效用函數曲線，應當會穿過中間的「參考點（Reference Point）」，並形成一個 S 型曲線。\n\n(二) 最大笨蛋理論\n凱恩斯提出「最大笨蛋理論」。該理論強調投資時你完全不管某樣東西的真實價值，即使它一文不值，你也願意花高價買下，是因為你預期有一個更大的笨蛋，會出更高的價格從你那兒把它買走。\n\n投機行為關鍵不在資產的公平價值，而是投資者判斷有無比自己更大的笨蛋，只要自己不是最大的笨蛋就是贏多贏少的問題。'
+  },
+  {
+    id:2,
+    stem:'請問造成過度自信的成因為何？',
+    answer:'過度自信指的是人們高估自己的知識、能力與取得資訊精確度的傾向，或者對於自己控制事情、解讀資訊的能力過度樂觀。許多心理學文獻指出人們通常有控制幻覺、自我歸因錯誤與選擇性偏差，這三種錯誤認知造成了過度自信。\n\n(一) 控制幻覺\n控制幻覺指人們會比較重視與自己看法相同的意見，而且會高估其所擁有的控制能力。\n\n(二) 自我歸因\n自我歸因是一種心理學現象，即人們通常將自己的成功歸因於自己的性格特質，而將自己的失敗歸因於環境影響，並會主動找尋支持自身論點的證據，忽略與自己相左的意見。\n\n(三) 選擇性偏差\n選擇性偏差是指人們常常根據自己對特定事件的代表性觀點，來估計某些事件發生的概率。這樣人們可能錯誤地相信了「小樣本定律」，將一系列的無相關歸因於一個確定的定律。\n\n(四) 金融市場的過度反應\n導致個人投資者績效不佳卻仍頻繁交易的重要因素即為過度自信。過度自信的投資人因高估自有資訊的精確度，進而高估經由交易帶來的利得，而造成過度交易行為。'
+  },
+  {
+    id:3,
+    stem:'請問開放型基金和封閉型基金有什麼不同？',
+    answer:'1. 受益憑證發行數量\n• 開放：不固定，隨投資人申購或贖回基金而變動\n• 封閉：發行後即固定不變\n\n2. 基金價格決定\n• 開放：依淨值\n• 封閉：集中市場的供需\n\n3. 基金買賣方式\n• 開放：投資人可隨時向基金管理公司申購或贖回\n• 封閉：與股票交易類似，須在集中市場買賣\n\n4. 投資費用\n• 開放：申購及贖回手續費合計約為投資基金價款的 3%，還要每年支付保管費\n• 封閉：買入與賣出時均需支付證券經紀商手續費 1.425‰（網路下單另有優惠），賣出時證券交易稅為 1‰，沒有保管費\n\n5. 基金是否保留現金\n• 開放：由於投資人購買與贖回頻繁，必須保留一部分比例的資產為現金方式持有，以應付投資人可能贖回需求\n• 封閉：不用面對投資人贖回的壓力，較不用保留現金\n\n6. 基金投資效益\n• 開放：投資部位受到限制，無法充分利用，故投資效益受到影響\n• 封閉：可充分利用資金，利於基金經理人擴大投資效益'
+  },
+  {
+    id:4,
+    stem:'請問投資債券有哪些風險？',
+    answer:'投資債券的風險包含以下九項：\n\n1. 利率風險（Interest Rate Risk）\n2. 再投資風險（Reinvestment Risk）\n3. 信用風險（Credit Risk）\n4. 流動性風險（Liquidity Risk）\n5. 通貨膨脹風險（Inflation Risk）\n6. 贖回風險（Call Risk）\n7. 匯率風險（Exchange Rate Risk）\n8. 波動度風險（Volatility Risk）\n9. 風險未知風險（Risk Risk）'
+  },
+  {
+    id:5,
+    stem:'請問殖利率、票面利率和價格關係為何？',
+    answer:'三者的關係有三種情況：\n\n1. 票面利率 = 到期殖利率\n→ 債券價格 = 債券面額\n\n2. 票面利率 < 到期殖利率\n→ 債券價格 < 債券面額\n\n3. 票面利率 > 到期殖利率\n→ 債券價格 > 債券面額'
+  },
+  {
+    id:6,
+    stem:'請問什麼是本息分離債券？本息分離債券有哪些優缺點？',
+    answer:'(一) 本息分離債券\n本息分離債券是券商以美國政府公債作擔保，發行分割式零息公債憑證。每一期利息的支付，和到期時的本金償還都各自獨立成一「分割債券」，可分別交易。分割後的債券屬零息債券，在債券到期前並無任何利息的支付，因此分割債券都是以折價的方式發行或買賣。\n\n(二) 優點\n1. 方便客製化商品設計。\n2. 建構較精細之殖利率曲線。\n3. 創造出更長存續期間債券，適合避險需求。\n\n(三) 缺點\n本息分離債券最大缺點就是流動性低，因為將一個發行量數百億的 30 年債券分割成 61 種資產，流通在外金額變少，而且因為在美國很多家證券商都搶著發行 STRIPS，同樣是十年期零息債券，美林發行的零息債券和高盛發行的零息債券證券代號不一樣，不能互相買賣。\n\n為了加強流動性，美國幾家主要證券商同意聯合發行一不屬於任何證券商的分離債券叫 Treasury Receipts（簡寫成 TRs），它們的 STRIPS 不蓋上個別公司的商標（Trademark），因此只要到期日一樣就可以互相買賣流通，此種作法稍微緩解 STRIPS 流動性不足的問題。'
+  },
+  {
+    id:7,
+    stem:'假設在倫敦市場 €1 = USD 1.1286，紐約市場 USD 1 = ¥ 113.86，東京市場 €1 = ¥ 127.15，試求算：\n(1) 歐元兌日圓（€/¥）之交叉匯率為何？\n(2) 請問有無套匯機會？應如何套匯才能獲利？若美國銀行以 US 1,000,000 套匯可獲利潤多少？',
+    answer:'(1) 計算歐元兌日圓的交叉匯率\n€/¥ = €/USD × USD/¥ = 1.1286 × 113.86 = 128.50\n\n(2) 套匯機會分析\n因為計算出的 €/¥ 交叉匯率（128.50）大於東京市場上歐元兌日圓之匯率（127.15），代表：\n• 東京市場歐元低估\n• 紐約市場日圓低估\n→ 因此有套匯機會\n\n套匯順序：USD → ¥ → € → USD\n\n美國銀行以 US 1,000,000 套匯的計算：\n1,000,000 × 113.86 ÷ 127.15 × 1.1286 = 1,010,636\n\n獲利 = 1,010,636 − 1,000,000 = USD 10,636'
+  },
+  {
+    id:8,
+    stem:'請問期貨有哪三項功能？',
+    answer:'1. 投機的功能\n讓投機者可以按照自己對價格的預測能力，承擔價格變動風險，而賺取高額預期報酬。\n\n2. 避險的功能\n提供標的物商品的持有者可以轉嫁價格變動的風險。\n\n3. 價格發現\n期貨市場反映著所有參與者對未來的預期。'
+  },
+  {
+    id:9,
+    stem:'請問期貨按標的物性質可分為哪兩大類？每類又可細分為哪幾小類？',
+    answer:'一、商品期貨\n\n(1) 農產品期貨\n• 穀物類：玉米、小麥\n• 家畜類：活牛、活豬\n\n(2) 金屬期貨\n• 貴金屬：黃金、白金\n• 工業金屬：銅、錫\n\n(3) 能源期貨\n汽油、天然氣\n\n(4) 其他商品期貨\n咖啡、可可\n\n二、金融期貨\n\n(1) 外匯期貨\n(2) 利率期貨\n(3) 股價指數期貨'
+  },
+];
+
+// State
+let queue=[], checked=[], curIdx=0;
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+function startQuiz(){
+  const doShuffle=document.querySelector('input[name="shuffle"]:checked').value==='shuffle';
+  queue=doShuffle?shuffle([...allQuestions]):[...allQuestions];
+  checked=new Array(queue.length).fill(false);
+  curIdx=0;
+  buildDotMap();
+  renderQ();
+  showScreen('screen-quiz');
+  updateHeader();
+}
+
+function updateHeader(){
+  const n=checked.filter(Boolean).length;
+  document.getElementById('hdr-info').textContent=`已看 ${n} / ${queue.length}`;
+}
+
+function buildDotMap(){
+  const map=document.getElementById('dot-map');
+  map.innerHTML=queue.map((_,i)=>`<div class="dot" id="dot-${i}" onclick="jumpTo(${i})" title="第${i+1}題">${i+1}</div>`).join('');
+}
+
+function updateDots(){
+  queue.forEach((_,i)=>{
+    const d=document.getElementById('dot-'+i);
+    d.className='dot';
+    if(checked[i]) d.classList.add('checked');
+    if(i===curIdx) d.classList.add('current');
+  });
+}
+
+function renderQ(){
+  const q=queue[curIdx];
+  const total=queue.length;
+  document.getElementById('prog-label').textContent=`第 ${curIdx+1} 題 / 共 ${total} 題`;
+  const n=checked.filter(Boolean).length;
+  document.getElementById('prog-checked').textContent=`已看過 ${n} 題`;
+  document.getElementById('prog-fill').style.width=(n/total*100)+'%';
+  document.getElementById('q-num-label').textContent=`Q${curIdx+1}（原題號 #${q.id}）`;
+  document.getElementById('q-stem').textContent=q.stem;
+  document.getElementById('answer-text').textContent=q.answer;
+  // hide answer when switching question
+  document.getElementById('answer-wrap').style.display='none';
+  document.getElementById('show-ans-btn').style.display='';
+  document.getElementById('show-ans-btn').textContent='📖 顯示答案';
+  document.getElementById('btn-prev').disabled=curIdx===0;
+  document.getElementById('btn-next').disabled=curIdx===queue.length-1;
+  updateDots();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function toggleAnswer(){
+  document.getElementById('answer-wrap').style.display='block';
+  document.getElementById('show-ans-btn').style.display='none';
+  if(!checked[curIdx]){
+    checked[curIdx]=true;
+    updateHeader();
+    updateDots();
+    const n=checked.filter(Boolean).length;
+    document.getElementById('prog-checked').textContent=`已看過 ${n} 題`;
+    document.getElementById('prog-fill').style.width=(n/queue.length*100)+'%';
+  }
+}
+
+function hideAnswer(){
+  document.getElementById('answer-wrap').style.display='none';
+  document.getElementById('show-ans-btn').style.display='';
+}
+
+function goPrev(){if(curIdx>0){curIdx--;renderQ();}}
+function goNext(){if(curIdx<queue.length-1){curIdx++;renderQ();}}
+function jumpTo(i){curIdx=i;renderQ();}
+
+function confirmEnd(){
+  const n=checked.filter(Boolean).length;
+  const skipped=queue.length-n;
+  const msg=skipped>0
+    ? `目前已看過 ${n} 題，還有 ${skipped} 題沒有查看過答案。\n確定要結束練習嗎？`
+    : `全部 ${queue.length} 題都看過答案了！\n確定要結束練習嗎？`;
+  document.getElementById('modal-msg').textContent=msg;
+  document.getElementById('modal').style.display='flex';
+}
+function closeModal(){document.getElementById('modal').style.display='none';}
+
+function endQuiz(){
+  closeModal();
+  const total=queue.length;
+  const n=checked.filter(Boolean).length;
+  const skipped=total-n;
+  document.getElementById('res-total').textContent=total;
+  document.getElementById('res-checked').textContent=n;
+  document.getElementById('res-skipped').textContent=skipped;
+  const msg=n===total?'👏 全部題目都看過了，準備充分！':n>=total*0.7?'📚 大部分看過了，記得補完剩下的題目！':'💪 還有不少沒看過，要繼續加油喔！';
+  document.getElementById('res-msg').textContent=msg;
+  showScreen('screen-result');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function restartQuiz(){showScreen('screen-start');}
+</script>
+</body>
+</html>
