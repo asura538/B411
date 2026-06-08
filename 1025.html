@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>策略管理 期末考練習</title>
+
+<!-- Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QMQ17LMD1T"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QMQ17LMD1T');
+</script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+  :root {
+    --bg:#f5f2eb; --surface:#fffdf8; --border:#d6cfc0;
+    --ink:#2c2416; --ink-light:#7a6f5e;
+    --accent:#c8541a; --accent-light:#f2e8e0;
+    --green:#2d7a4f; --green-light:#e0f0e8;
+    --red:#c0392b; --red-light:#fce8e6;
+    --yellow:#e8a020; --yellow-light:#fef5e0;
+    --blue:#1a5fa8; --blue-light:#e0ecf8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+
+  header{background:var(--ink);color:#fff;padding:13px 20px;display:flex;align-items:center;gap:10px;}
+  header h1{font-size:.95rem;font-weight:700;letter-spacing:.04em;flex:1;}
+  .hdr-info{font-family:'Space Mono',monospace;font-size:.8rem;color:#ccc;}
+
+  .app{max-width:720px;margin:0 auto;padding:20px 16px 100px;}
+
+  .screen{display:none;} .screen.active{display:block;}
+
+  /* start */
+  .start-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:32px 24px;text-align:center;margin-top:24px;}
+  .start-card h2{font-size:1.2rem;font-weight:700;margin-bottom:8px;}
+  .start-card p{font-size:.88rem;color:var(--ink-light);line-height:1.7;margin-bottom:24px;}
+  .info-row{display:flex;justify-content:center;gap:32px;margin-bottom:28px;flex-wrap:wrap;}
+  .info-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .info-val{font-family:'Space Mono',monospace;font-size:1.6rem;font-weight:700;color:var(--accent);}
+  .info-label{font-size:.72rem;color:var(--ink-light);}
+
+  .shuffle-row{display:flex;gap:16px;justify-content:center;margin-bottom:20px;}
+  .shuffle-row label{display:flex;align-items:center;gap:6px;font-size:.88rem;cursor:pointer;}
+  .shuffle-row input{accent-color:var(--accent);}
+
+  .btn-primary-full{background:var(--accent);color:#fff;border:none;padding:13px 24px;border-radius:9px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;width:100%;transition:all .15s;min-height:48px;}
+  .btn-primary-full:hover{background:#a8431a;}
+
+  /* quiz */
+  .progress-bar-wrap{margin-bottom:16px;}
+  .progress-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .progress-label{font-family:'Space Mono',monospace;font-size:.78rem;color:var(--ink-light);}
+  .progress-checked{font-size:.75rem;color:var(--ink-light);}
+  .progress-track{width:100%;height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .3s;}
+
+  /* dot map */
+  .dot-map{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px;}
+  .dot{width:22px;height:22px;border-radius:5px;background:var(--border);cursor:pointer;transition:all .15s;border:2px solid transparent;font-size:.65rem;display:flex;align-items:center;justify-content:center;color:var(--ink-light);font-weight:700;font-family:'Space Mono',monospace;}
+  .dot.checked{background:var(--accent-light);border-color:var(--accent);color:var(--accent);}
+  .dot.current{border-color:var(--ink);background:var(--ink);color:#fff;}
+  .dot.checked.current{background:var(--accent);border-color:var(--ink);color:#fff;}
+
+  /* q card */
+  .q-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:24px 22px;margin-bottom:14px;}
+  .q-num-label{font-family:'Space Mono',monospace;font-size:.75rem;color:var(--ink-light);margin-bottom:10px;letter-spacing:.08em;}
+  .q-stem{font-size:1rem;font-weight:600;line-height:1.8;margin-bottom:20px;color:var(--ink);}
+
+  .show-ans-btn{background:var(--blue);color:#fff;border:none;padding:11px 20px;border-radius:9px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;width:100%;min-height:44px;transition:all .15s;}
+  .show-ans-btn:hover{background:#154d8a;}
+  .hide-ans-btn{background:transparent;color:var(--ink-light);border:1.5px solid var(--border);padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:500;cursor:pointer;font-family:'Noto Sans TC',sans-serif;margin-top:10px;}
+  .hide-ans-btn:hover{color:var(--ink);border-color:var(--ink);}
+
+  .answer-box{background:var(--green-light);border:1.5px solid var(--green);border-radius:10px;padding:16px 18px;margin-top:14px;}
+  .answer-label{font-size:.72rem;font-weight:700;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;display:block;}
+  .answer-text{font-size:.9rem;line-height:1.85;color:var(--ink);}
+
+  /* Answer image */
+  .ans-img-wrap{margin:14px 0 6px;}
+  .ans-img-label{font-size:.72rem;color:var(--ink-light);margin-bottom:6px;display:block;}
+  .ans-img{width:100%;max-width:480px;border:1.5px solid var(--ink-light);border-radius:8px;background:#fff;cursor:zoom-in;display:block;}
+  .ans-img-hint{font-size:.7rem;color:var(--ink-light);margin-top:4px;text-align:center;font-style:italic;}
+
+  /* Lightbox (image zoom modal) */
+  .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:300;display:none;align-items:center;justify-content:center;padding:16px;flex-direction:column;}
+  .lightbox.show{display:flex;}
+  .lightbox-img{max-width:100%;max-height:85vh;border-radius:6px;background:#fff;cursor:zoom-out;}
+  .lightbox-close{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.15);color:#fff;border:none;width:40px;height:40px;border-radius:50%;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans TC',sans-serif;}
+  .lightbox-close:hover{background:rgba(255,255,255,.3);}
+  .lightbox-tip{color:#aaa;font-size:.78rem;margin-top:12px;text-align:center;}
+
+  /* ── Chart styles ── */
+  .chart{background:#fff;border:1.5px solid var(--ink-light);border-radius:8px;padding:14px;margin:14px 0;font-size:.82rem;}
+  .chart-title{text-align:center;font-weight:700;color:var(--ink);margin-top:8px;font-size:.78rem;}
+  .chart-row{display:flex;gap:8px;margin-bottom:8px;}
+  .chart-cell{flex:1;padding:8px 10px;border:1.5px solid var(--ink-light);border-radius:6px;background:#fafafa;line-height:1.5;font-size:.78rem;}
+  .chart-cell b{display:block;margin-bottom:4px;color:var(--accent);font-size:.85rem;}
+
+  /* 2x2 matrix */
+  .matrix-2x2{display:grid;grid-template-columns:90px 1fr 1fr;gap:6px;margin:14px 0;font-size:.78rem;}
+  .matrix-2x2 .mh{background:var(--ink);color:#fff;padding:8px;text-align:center;font-weight:700;border-radius:5px;font-size:.72rem;}
+  .matrix-2x2 .ml{background:var(--ink-light);color:#fff;padding:8px;text-align:center;font-weight:700;border-radius:5px;font-size:.72rem;writing-mode:vertical-rl;text-orientation:mixed;display:flex;align-items:center;justify-content:center;}
+  .matrix-2x2 .mc{padding:14px 10px;text-align:center;border:1.5px solid var(--ink-light);border-radius:5px;background:#fff;font-weight:700;color:var(--accent);}
+
+  /* Flow chart (arrow connected boxes) */
+  .flow{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:12px 0;justify-content:center;}
+  .flow-box{background:#fff;border:1.5px solid var(--ink);border-radius:6px;padding:8px 10px;font-size:.75rem;font-weight:700;line-height:1.4;text-align:center;min-width:70px;}
+  .flow-box.highlight{background:var(--accent-light);border-color:var(--accent);color:var(--accent);}
+  .flow-arrow{color:var(--ink-light);font-size:1rem;}
+  .flow-vert{display:flex;flex-direction:column;align-items:center;gap:6px;margin:12px 0;}
+
+  /* Tree (one node with children) */
+  .tree{margin:14px 0;}
+  .tree-root{background:var(--ink);color:#fff;padding:8px 16px;border-radius:6px;font-weight:700;font-size:.85rem;display:inline-block;margin-bottom:10px;}
+  .tree-line{height:14px;width:2px;background:var(--ink-light);margin:0 auto;}
+  .tree-children{display:flex;gap:6px;flex-wrap:wrap;}
+  .tree-child{flex:1;min-width:90px;background:#fafafa;border:1.5px solid var(--ink-light);border-radius:6px;padding:8px 10px;font-size:.75rem;line-height:1.5;}
+  .tree-child b{display:block;color:var(--accent);margin-bottom:4px;font-size:.82rem;}
+
+  /* Cross diagram (creative innovation chart) */
+  .creative-cross{position:relative;margin:14px 0;padding:14px;background:#fafafa;border:1.5px solid var(--ink-light);border-radius:8px;}
+  .creative-cross-row{display:flex;gap:6px;align-items:stretch;margin-bottom:6px;}
+  .creative-cross-row:last-child{margin-bottom:0;}
+  .creative-arrow{flex:0 0 50px;background:var(--accent);color:#fff;padding:8px 4px;border-radius:5px;font-size:.72rem;font-weight:700;text-align:center;display:flex;align-items:center;justify-content:center;}
+  .creative-desc{flex:1;background:#fff;border:1.5px solid var(--ink-light);border-radius:5px;padding:8px 10px;font-size:.75rem;line-height:1.5;}
+
+  /* nav */
+  .nav-bar{display:flex;gap:8px;align-items:center;margin-top:14px;}
+  .btn-nav{background:var(--surface);color:var(--ink);border:1.5px solid var(--border);padding:11px 14px;border-radius:9px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .15s;min-height:44px;flex:1;}
+  .btn-nav:hover:not(:disabled){border-color:var(--ink);}
+  .btn-nav:disabled{opacity:.35;cursor:not-allowed;}
+  .btn-end{background:var(--red);color:#fff;border:none;padding:11px 18px;border-radius:9px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .15s;min-height:44px;}
+  .btn-end:hover{background:#a0231a;}
+
+  /* modal */
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .modal{background:var(--surface);border-radius:14px;padding:28px 24px;max-width:360px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.18);}
+  .modal h3{font-size:1rem;font-weight:700;margin-bottom:8px;}
+  .modal p{font-size:.88rem;color:var(--ink-light);line-height:1.7;margin-bottom:20px;white-space:pre-line;}
+  .modal-actions{display:flex;gap:10px;}
+  .btn-modal-cancel{flex:1;background:transparent;border:1.5px solid var(--border);color:var(--ink);padding:10px;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;}
+  .btn-modal-confirm{flex:1;background:var(--red);color:#fff;border:none;padding:10px;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;}
+
+  /* result */
+  .result-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:32px 24px;margin-top:20px;text-align:center;}
+  .result-icon{font-size:3rem;margin-bottom:12px;}
+  .result-title{font-size:1.3rem;font-weight:700;margin-bottom:8px;}
+  .result-stats{display:flex;justify-content:center;gap:32px;margin:24px 0;flex-wrap:wrap;}
+  .rs{display:flex;flex-direction:column;align-items:center;gap:3px;}
+  .rs-val{font-family:'Space Mono',monospace;font-size:1.5rem;font-weight:700;color:var(--accent);}
+  .rs-label{font-size:.72rem;color:var(--ink-light);}
+  .result-msg{font-size:.88rem;color:var(--ink-light);margin-bottom:24px;line-height:1.7;}
+</style>
+</head>
+<body>
+<header>
+  <h1>🎯 策略管理｜期末考練習</h1>
+  <span class="hdr-info" id="hdr-info"></span>
+</header>
+
+<div class="app">
+
+  <!-- Start -->
+  <div class="screen active" id="screen-start">
+    <div class="start-card">
+      <h2>問答題練習</h2>
+      <p>共 11 題問答題，先思考自己的答案，<br>再點「顯示答案」對照參考解答。</p>
+      <div class="info-row">
+        <div class="info-item"><span class="info-val">11</span><span class="info-label">題數</span></div>
+        <div class="info-item"><span class="info-val">問答</span><span class="info-label">題型</span></div>
+      </div>
+      <div class="shuffle-row">
+        <label><input type="radio" name="shuffle" value="order" checked> 依序出題</label>
+        <label><input type="radio" name="shuffle" value="shuffle"> 隨機出題</label>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <a class="btn-primary-full" href="index.html" style="flex:1;text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;background:var(--surface);color:var(--ink);border:1.5px solid var(--border);">← 回首頁</a>
+        <button class="btn-primary-full" onclick="startQuiz()" style="flex:1.5;">開始練習 →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz -->
+  <div class="screen" id="screen-quiz">
+    <div class="progress-bar-wrap">
+      <div class="progress-info">
+        <span class="progress-label" id="prog-label">第 1 題 / 共 11 題</span>
+        <span class="progress-checked" id="prog-checked">已看過 0 題</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="dot-map" id="dot-map"></div>
+
+    <div class="q-card">
+      <div class="q-num-label" id="q-num-label">Q1</div>
+      <div class="q-stem" id="q-stem"></div>
+      <button class="show-ans-btn" id="show-ans-btn" onclick="toggleAnswer()">📖 顯示答案</button>
+      <div id="answer-wrap" style="display:none">
+        <div class="answer-box">
+          <span class="answer-label">參考答案</span>
+          <div class="answer-text" id="answer-text"></div>
+        </div>
+        <button class="hide-ans-btn" onclick="hideAnswer()">隱藏答案</button>
+      </div>
+    </div>
+
+    <div class="nav-bar">
+      <button class="btn-nav" id="btn-prev" onclick="goPrev()">← 上一題</button>
+      <button class="btn-end" onclick="confirmEnd()">結束</button>
+      <button class="btn-nav" id="btn-next" onclick="goNext()">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Result -->
+  <div class="screen" id="screen-result">
+    <div class="result-card">
+      <div class="result-icon">🎓</div>
+      <div class="result-title">練習結束</div>
+      <div class="result-stats">
+        <div class="rs"><span class="rs-val" id="res-total">0</span><span class="rs-label">總題數</span></div>
+        <div class="rs"><span class="rs-val" id="res-checked" style="color:var(--green)">0</span><span class="rs-label">看過答案</span></div>
+        <div class="rs"><span class="rs-val" id="res-skipped" style="color:var(--yellow)">0</span><span class="rs-label">未查看</span></div>
+      </div>
+      <div class="result-msg" id="res-msg"></div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-primary-full" onclick="restartQuiz()" style="flex:1;">再練一次</button>
+        <a class="btn-primary-full" href="index.html" style="flex:1;text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;background:var(--surface);color:var(--ink);border:1.5px solid var(--border);">回首頁</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal-bg" id="modal" style="display:none">
+  <div class="modal">
+    <h3>確定要結束嗎？</h3>
+    <p id="modal-msg"></p>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeModal()">繼續練習</button>
+      <button class="btn-modal-confirm" onclick="endQuiz()">確定結束</button>
+    </div>
+  </div>
+</div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img class="lightbox-img" id="lightbox-img" src="" alt="放大圖" onclick="event.stopPropagation()">
+  <div class="lightbox-tip">點背景或 ✕ 關閉</div>
+</div>
+
+<script>
+const allQuestions = [
+  {
+    id:1,
+    stem:'請解釋「規模經濟」和「範疇經濟」？',
+    answer:'(一) 規模經濟\n透過生產規模的擴大使單位成本下降，以提高競爭力。\n\n(二) 範疇經濟\n由兩個或多個事業單位共同投資、共享資源，所以各企業共同分擔了研發、購料、生產與行銷等各方面的成本。'
+  },
+  {
+    id:2,
+    stem:'什麼是策略委外？委外的主要原因是什麼？',
+    answer:'(一) 策略委外\n公司應該致力於發揮自己的核心價值，並據此創造附加價值高的活動，而將非核心事業部分委外操作。\n\n(二) 委外的主要原因\n1. 委外的根本因素是在削減成本\n2. 企業更能專注在核心能力上\n3. 建立可變動的成本結構\n4. 取得企業內部欠缺的技能'
+  },
+  {
+    id:3,
+    stem:'何謂多角化？多角化的類型有哪幾種？',
+    answer:'(一) 多角化定義\n是指企業以全新的產品，進入一個全新的產業和市場。\n\n(二) 類型（依內部事業組合方式的不同分為三種）\n\n1. 有限多角化策略\n公司所有或大部分事業均屬同一產業。\n\n2. 相關多角化策略\n公司經營超過了一個以上的市場或事業。\n\n3. 非相關多角化\n公司所經營的事業彼此間並沒有分享共同的資源或是相同的屬性。<div class="ans-img-wrap"><span class="ans-img-label">📖 圖 9-1 多角化的類型</span><img class="ans-img" src="1025-fig-9-1.png" alt="圖9-1 多角化的類型" onclick="openLightbox(this.src)"><div class="ans-img-hint">點圖片可放大</div></div>'
+  },
+  {
+    id:4,
+    stem:'請闡釋購併的定義和不同的類型？',
+    answer:'(一) 定義\n購併包含「合併」和「收購」兩種。\n- 收購：指某一公司（出資公司）購買其他公司（目標公司）的資產或股權。\n- 合併：指兩家以上的公司，經由法律程序結合成一家公司。\n\n(二) 類型\n\n1. 收購可區分為「股權收購」和「資產收購」\n\n(1) 股權收購：\n主併公司購買了目標公司部分或全部的股權，因為具有股東身分，所以必須承受所有的相關債務。\n\n(2) 資產收購：\n主併公司買了目標公司部分或全部的資產，此種行為不觸及目標公司的債務問題。\n\n2. 合併可以區分為「吸收合併」和「設立合併」\n\n(1) 吸收合併：\n兩家公司合併之後目標公司旋即消滅，而主併公司則繼續存在，並且吸收了目標公司所有的資產與負債。\n\n(2) 設立合併：\n在合併後，兩家公司之法人資格均被消滅，而成為一家新設的公司，至於原公司之權利與義務也由新公司來概括承受。<div class="ans-img-wrap"><span class="ans-img-label">📖 圖 10-2 購併的資本類型</span><img class="ans-img" src="1025-fig-10-2.png" alt="圖10-2 購併的資本類型" onclick="openLightbox(this.src)"><div class="ans-img-hint">點圖片可放大</div></div>'
+  },
+  {
+    id:5,
+    stem:'何謂策略聯盟？可以區分為哪三類？',
+    answer:'(一) 策略聯盟定義\n在不同的企業間所建立的伙伴關係，藉著結合彼此的資源、能耐與核心能力，來共同追求於產品設計、生產製造或是行銷通路上的共同利益。\n\n(二) 策略聯盟的三大類型\n\n1. 非股權聯盟\n公司間的合作直接透過契約來管理，彼此間並沒有交叉持股或另創獨立的公司。\n\n2. 股權聯盟\n除了合作契約外，聯盟的一方尚有股權投資在另一方，有時也是交叉持股。\n\n3. 合資\n合作的公司透過共同投資，來創立新的公司，所產生的利潤則共同來分享。<div class="ans-img-wrap"><span class="ans-img-label">📖 圖 10-1 策略聯盟的類型</span><img class="ans-img" src="1025-fig-10-1.png" alt="圖10-1 策略聯盟的類型" onclick="openLightbox(this.src)"><div class="ans-img-hint">點圖片可放大</div></div>'
+  },
+  {
+    id:6,
+    stem:'請闡釋 Porter 的事業策略類型為何？',
+    answer:'學者 Porter 認為任何一個產業中，五種力量包含供應商、顧客、潛在進入者、替代品和產業內部的競爭者等，主導了產業的競爭規則，而事業單位據此形成三種主要策略：\n\n1. 成本領導策略\n透過經驗曲線或高效率的管理，來降低整體營運成本以達到競爭上的優勢。\n\n2. 差異化策略\n透過塑造產品與服務上的獨特性，造成與對手主要的差異，而獲得市場上的競爭優勢。\n\n3. 集中化策略\n將其有限資源集中在一特殊的區隔上，並透過滿足特定消費者的需求，來發展企業的競爭優勢。<div class="ans-img-wrap"><span class="ans-img-label">📖 圖 11-1 Porter 的一般性競爭策略</span><img class="ans-img" src="1025-fig-11-1.png" alt="圖11-1 Porter的一般性競爭策略" onclick="openLightbox(this.src)"><div class="ans-img-hint">點圖片可放大</div></div>'
+  },
+  {
+    id:7,
+    stem:'企業的功能策略是如何建構，競爭優勢如何產生？',
+    answer:'企業可審視內部的「資源」與「能耐」，藉以發展出「核心能力」，並據此建立「各項功能策略」，包括：\n1. 經營效率\n2. 全面品管\n3. 創新能力\n4. 顧客回應\n\n由這四項功能策略可塑造產品與服務的「差異化」或是營運上的「低成本」，以形成企業長久的「競爭優勢」。<div class="ans-img-wrap"><span class="ans-img-label">📖 圖 12-1 企業功能策略建構圖</span><img class="ans-img" src="1025-fig-12-1.png" alt="圖12-1 企業功能策略建構圖" onclick="openLightbox(this.src)"><div class="ans-img-hint">點圖片可放大</div></div>'
+  },
+  {
+    id:8,
+    stem:'請解釋：規模經濟、學習效果和經驗曲線？',
+    answer:'(一) 規模經濟\n透過生產規模的擴大使單位成本下降。\n\n(二) 學習效果\n係指經由實際的重複操作和學習之後，所獲得在成本和費用上的減少。\n\n(三) 經驗曲線\n當企業擁有了「規模經濟」和「學習效果」後，將產生「經驗曲線」，係指隨著時間和產出的累積，便造成了每單位的產品成本，會隨著累積的生產量而逐漸下降。'
+  },
+  {
+    id:9,
+    stem:'企業如何運用創造力的三要素，來激發員工創意？',
+    answer:'創造力的三要素模式包含「專業技術」、「創意思考的技巧」和「工作本身的激勵」，所要求的程度愈強，則激發員工的效果也就愈好。\n\n(一) 專業技術\n當員工在工作領域都具備相關能力且十分熟練時，才能發揮創造創新的能力。\n\n(二) 創意思考的技巧\n除了創造相關的人格特質、推導的能力和由不同角度思考的方式外，組織也可創造不同多元思考的空間與環境，鼓勵員工的創意。\n\n(三) 工作本身的激勵\n企業可以在公司的昇遷與獎勵上與創造力相結合，才能維繫住源源不斷的創新能力。'
+  },
+  {
+    id:10,
+    stem:'請說明維持性創新和破壞式創新的內容。',
+    answer:'(一) 維持性創新\n是建立在公司現有技術和能力基礎上，謀求不斷的改良進步。\n\n(二) 破壞式創新\n是改變了原有技術發展路徑的創新，並推出新價值主張，以創造新市場或改造現有市場。其有兩種類型：「新市場的破壞式創新」及「低階市場的破壞式創新」。\n\n(三) 三種型態說明\n\n1. 高階市場的維持性創新\n針對尚未滿足的顧客，他們期望產品能改進，也願意為更好的性能來花更多的錢。\n\n2. 低階市場的破壞式創新\n針對過度滿足的顧客，他們並不樂意再花更多的金錢追求更好的性能。\n\n3. 新市場的破壞式創新\n針對尚未消費的顧客，由於財力或技能不足，使得市場上的產品或服務對他們而言並不適用，此時企業會推出較簡單、便宜而且方便使用的產品，使他們有能力和管道消費。<div class="ans-img-wrap"><span class="ans-img-label">📖 圖 13-2 維持性與破壞性創新策略</span><img class="ans-img" src="1025-fig-13-2.png" alt="圖13-2 維持性與破壞性創新策略" onclick="openLightbox(this.src)"><div class="ans-img-hint">點圖片可放大</div></div>'
+  },
+  {
+    id:11,
+    stem:'藍海與紅海有何差異？「四項行動架構」內容為何？',
+    answer:'(一) 紅海策略\n認定產業結構是固定的，每個產業有其疆界，只能在此疆界內競逐市占率，進行零合競爭。\n\n(二) 藍海策略\n則是視競爭為無意義之行為，跳脫傳統一元獲利思維，另闢蹊徑挖掘未被開發的新市場。\n\n(三) 四項行動架構\n\n1. 消去：產業內習以為常的因素，哪些應予消去？\n\n2. 降低：哪些因素應降低到遠低於產業的標準？\n\n3. 提升：哪些因素應提升到遠超過產業的標準？\n\n4. 創造：哪些未提供的因素，應該被創造出來？<div class="ans-img-wrap"><span class="ans-img-label">📖 四項行動架構</span><img class="ans-img" src="1025-fig-blue.png" alt="四項行動架構" onclick="openLightbox(this.src)"><div class="ans-img-hint">點圖片可放大</div></div>'
+  },
+];
+
+// State
+let queue=[], checked=[], curIdx=0;
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+function startQuiz(){
+  const doShuffle=document.querySelector('input[name="shuffle"]:checked').value==='shuffle';
+  queue=doShuffle?shuffle([...allQuestions]):[...allQuestions];
+  checked=new Array(queue.length).fill(false);
+  curIdx=0;
+  buildDotMap();
+  renderQ();
+  showScreen('screen-quiz');
+  updateHeader();
+}
+
+function updateHeader(){
+  const n=checked.filter(Boolean).length;
+  document.getElementById('hdr-info').textContent=`已看 ${n} / ${queue.length}`;
+}
+
+function buildDotMap(){
+  const map=document.getElementById('dot-map');
+  map.innerHTML=queue.map((_,i)=>`<div class="dot" id="dot-${i}" onclick="jumpTo(${i})" title="第${i+1}題">${i+1}</div>`).join('');
+}
+
+function updateDots(){
+  queue.forEach((_,i)=>{
+    const d=document.getElementById('dot-'+i);
+    d.className='dot';
+    if(checked[i]) d.classList.add('checked');
+    if(i===curIdx) d.classList.add('current');
+  });
+}
+
+function renderQ(){
+  const q=queue[curIdx];
+  const total=queue.length;
+  document.getElementById('prog-label').textContent=`第 ${curIdx+1} 題 / 共 ${total} 題`;
+  const n=checked.filter(Boolean).length;
+  document.getElementById('prog-checked').textContent=`已看過 ${n} 題`;
+  document.getElementById('prog-fill').style.width=(n/total*100)+'%';
+  document.getElementById('q-num-label').textContent=`Q${curIdx+1}（原題號 #${q.id}）`;
+  document.getElementById('q-stem').textContent=q.stem;
+  document.getElementById('answer-text').innerHTML=q.answer.replace(/\n/g,'<br>');
+  // hide answer when switching question
+  document.getElementById('answer-wrap').style.display='none';
+  document.getElementById('show-ans-btn').style.display='';
+  document.getElementById('show-ans-btn').textContent='📖 顯示答案';
+  document.getElementById('btn-prev').disabled=curIdx===0;
+  document.getElementById('btn-next').disabled=curIdx===queue.length-1;
+  updateDots();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function toggleAnswer(){
+  document.getElementById('answer-wrap').style.display='block';
+  document.getElementById('show-ans-btn').style.display='none';
+  if(!checked[curIdx]){
+    checked[curIdx]=true;
+    updateHeader();
+    updateDots();
+    const n=checked.filter(Boolean).length;
+    document.getElementById('prog-checked').textContent=`已看過 ${n} 題`;
+    document.getElementById('prog-fill').style.width=(n/queue.length*100)+'%';
+  }
+}
+
+function hideAnswer(){
+  document.getElementById('answer-wrap').style.display='none';
+  document.getElementById('show-ans-btn').style.display='';
+}
+
+function goPrev(){if(curIdx>0){curIdx--;renderQ();}}
+function goNext(){if(curIdx<queue.length-1){curIdx++;renderQ();}}
+function jumpTo(i){curIdx=i;renderQ();}
+
+function confirmEnd(){
+  const n=checked.filter(Boolean).length;
+  const skipped=queue.length-n;
+  const msg=skipped>0
+    ? `目前已看過 ${n} 題，還有 ${skipped} 題沒有查看過答案。\n確定要結束練習嗎？`
+    : `全部 ${queue.length} 題都看過答案了！\n確定要結束練習嗎？`;
+  document.getElementById('modal-msg').textContent=msg;
+  document.getElementById('modal').style.display='flex';
+}
+function closeModal(){document.getElementById('modal').style.display='none';}
+
+function endQuiz(){
+  closeModal();
+  const total=queue.length;
+  const n=checked.filter(Boolean).length;
+  const skipped=total-n;
+  document.getElementById('res-total').textContent=total;
+  document.getElementById('res-checked').textContent=n;
+  document.getElementById('res-skipped').textContent=skipped;
+  const msg=n===total?'👏 全部題目都看過了，準備充分！':n>=total*0.7?'📚 大部分看過了，記得補完剩下的題目！':'💪 還有不少沒看過，要繼續加油喔！';
+  document.getElementById('res-msg').textContent=msg;
+  showScreen('screen-result');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function restartQuiz(){showScreen('screen-start');}
+
+// ── Lightbox (image zoom) ──
+function openLightbox(src){
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('show');
+  document.body.style.overflow = '';
+}
+// 按 ESC 也能關閉
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape') closeLightbox();
+});
+</script>
+</body>
+</html>
