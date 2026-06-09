@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>財報歷屆考題 問答題練習</title>
+
+<!-- Google Analytics (GA4) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QMQ17LMD1T"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-QMQ17LMD1T');
+</script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap');
+  :root {
+    --bg:#f5f2eb; --surface:#fffdf8; --border:#d6cfc0;
+    --ink:#2c2416; --ink-light:#7a6f5e;
+    --accent:#c8541a; --accent-light:#f2e8e0;
+    --green:#2d7a4f; --green-light:#e0f0e8;
+    --red:#c0392b; --red-light:#fce8e6;
+    --yellow:#e8a020; --yellow-light:#fef5e0;
+    --blue:#1a5fa8; --blue-light:#e0ecf8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Noto Sans TC',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+
+  header{background:var(--ink);color:#fff;padding:13px 20px;display:flex;align-items:center;gap:10px;}
+  header h1{font-size:.95rem;font-weight:700;letter-spacing:.04em;flex:1;}
+  .hdr-info{font-family:'Space Mono',monospace;font-size:.8rem;color:#ccc;}
+
+  .app{max-width:720px;margin:0 auto;padding:20px 16px 100px;}
+
+  .screen{display:none;} .screen.active{display:block;}
+
+  /* start */
+  .start-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:32px 24px;text-align:center;margin-top:24px;}
+  .start-card h2{font-size:1.2rem;font-weight:700;margin-bottom:8px;}
+  .start-card p{font-size:.88rem;color:var(--ink-light);line-height:1.7;margin-bottom:24px;}
+  .info-row{display:flex;justify-content:center;gap:32px;margin-bottom:28px;flex-wrap:wrap;}
+  .info-item{display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .info-val{font-family:'Space Mono',monospace;font-size:1.6rem;font-weight:700;color:var(--accent);}
+  .info-label{font-size:.72rem;color:var(--ink-light);}
+
+  .shuffle-row{display:flex;gap:16px;justify-content:center;margin-bottom:20px;}
+  .shuffle-row label{display:flex;align-items:center;gap:6px;font-size:.88rem;cursor:pointer;}
+  .shuffle-row input{accent-color:var(--accent);}
+
+  .btn-primary-full{background:var(--accent);color:#fff;border:none;padding:13px 24px;border-radius:9px;font-size:.9rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;width:100%;transition:all .15s;min-height:48px;}
+  .btn-primary-full:hover{background:#a8431a;}
+
+  /* quiz */
+  .progress-bar-wrap{margin-bottom:16px;}
+  .progress-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .progress-label{font-family:'Space Mono',monospace;font-size:.78rem;color:var(--ink-light);}
+  .progress-checked{font-size:.75rem;color:var(--ink-light);}
+  .progress-track{width:100%;height:5px;background:var(--border);border-radius:99px;overflow:hidden;}
+  .progress-fill{height:100%;background:var(--accent);border-radius:99px;transition:width .3s;}
+
+  /* dot map */
+  .dot-map{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px;}
+  .dot{width:22px;height:22px;border-radius:5px;background:var(--border);cursor:pointer;transition:all .15s;border:2px solid transparent;font-size:.65rem;display:flex;align-items:center;justify-content:center;color:var(--ink-light);font-weight:700;font-family:'Space Mono',monospace;}
+  .dot.checked{background:var(--accent-light);border-color:var(--accent);color:var(--accent);}
+  .dot.current{border-color:var(--ink);background:var(--ink);color:#fff;}
+  .dot.checked.current{background:var(--accent);border-color:var(--ink);color:#fff;}
+
+  /* q card */
+  .q-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:24px 22px;margin-bottom:14px;}
+  .q-num-label{font-family:'Space Mono',monospace;font-size:.75rem;color:var(--ink-light);margin-bottom:10px;letter-spacing:.08em;}
+  .q-stem{font-size:1rem;font-weight:600;line-height:1.8;margin-bottom:20px;color:var(--ink);}
+
+  .show-ans-btn{background:var(--blue);color:#fff;border:none;padding:11px 20px;border-radius:9px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;width:100%;min-height:44px;transition:all .15s;}
+  .show-ans-btn:hover{background:#154d8a;}
+  .hide-ans-btn{background:transparent;color:var(--ink-light);border:1.5px solid var(--border);padding:8px 16px;border-radius:8px;font-size:.8rem;font-weight:500;cursor:pointer;font-family:'Noto Sans TC',sans-serif;margin-top:10px;}
+  .hide-ans-btn:hover{color:var(--ink);border-color:var(--ink);}
+
+  .answer-box{background:var(--green-light);border:1.5px solid var(--green);border-radius:10px;padding:16px 18px;margin-top:14px;}
+  .answer-label{font-size:.72rem;font-weight:700;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;display:block;}
+  .answer-text{font-size:.9rem;line-height:1.85;color:var(--ink);}
+
+  /* Data table for question stem */
+  .data-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.85rem;background:#fff;}
+  .data-table th,.data-table td{border:1.5px solid var(--ink-light);padding:6px 10px;text-align:left;}
+  .data-table th{background:var(--ink);color:#fff;font-weight:700;font-size:.78rem;}
+  .data-table td.num{text-align:right;font-family:'Space Mono',monospace;}
+
+  /* Formula display */
+  .formula{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:6px 4px;font-size:.95rem;}
+  .formula .num{padding:2px 10px;border-bottom:2px solid var(--ink);font-weight:600;}
+  .formula .den{padding:2px 10px;font-weight:600;}
+  .formula-line{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px;margin:8px 0;font-size:.95rem;}
+  .formula-box{background:#fff;border:1.5px solid var(--green);border-radius:8px;padding:12px;margin:8px 0;}
+  .calc-line{font-family:'Space Mono',monospace;font-size:.82rem;color:var(--ink-light);margin-top:6px;}
+  .ans-num{font-weight:700;color:var(--accent);font-size:1rem;}
+
+  /* nav */
+  .nav-bar{display:flex;gap:8px;align-items:center;margin-top:14px;}
+  .btn-nav{background:var(--surface);color:var(--ink);border:1.5px solid var(--border);padding:11px 14px;border-radius:9px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .15s;min-height:44px;flex:1;}
+  .btn-nav:hover:not(:disabled){border-color:var(--ink);}
+  .btn-nav:disabled{opacity:.35;cursor:not-allowed;}
+  .btn-end{background:var(--red);color:#fff;border:none;padding:11px 18px;border-radius:9px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;transition:all .15s;min-height:44px;}
+  .btn-end:hover{background:#a0231a;}
+
+  /* modal */
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .modal{background:var(--surface);border-radius:14px;padding:28px 24px;max-width:360px;width:100%;box-shadow:0 8px 32px rgba(0,0,0,.18);}
+  .modal h3{font-size:1rem;font-weight:700;margin-bottom:8px;}
+  .modal p{font-size:.88rem;color:var(--ink-light);line-height:1.7;margin-bottom:20px;white-space:pre-line;}
+  .modal-actions{display:flex;gap:10px;}
+  .btn-modal-cancel{flex:1;background:transparent;border:1.5px solid var(--border);color:var(--ink);padding:10px;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;}
+  .btn-modal-confirm{flex:1;background:var(--red);color:#fff;border:none;padding:10px;border-radius:8px;font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Noto Sans TC',sans-serif;}
+
+  /* result */
+  .result-card{background:var(--surface);border:1.5px solid var(--border);border-radius:14px;padding:32px 24px;margin-top:20px;text-align:center;}
+  .result-icon{font-size:3rem;margin-bottom:12px;}
+  .result-title{font-size:1.3rem;font-weight:700;margin-bottom:8px;}
+  .result-stats{display:flex;justify-content:center;gap:32px;margin:24px 0;flex-wrap:wrap;}
+  .rs{display:flex;flex-direction:column;align-items:center;gap:3px;}
+  .rs-val{font-family:'Space Mono',monospace;font-size:1.5rem;font-weight:700;color:var(--accent);}
+  .rs-label{font-size:.72rem;color:var(--ink-light);}
+  .result-msg{font-size:.88rem;color:var(--ink-light);margin-bottom:24px;line-height:1.7;}
+</style>
+</head>
+<body>
+<header>
+  <h1>📑 財報歷屆考題｜問答題練習</h1>
+  <span class="hdr-info" id="hdr-info"></span>
+</header>
+
+<div class="app">
+
+  <!-- Start -->
+  <div class="screen active" id="screen-start">
+    <div class="start-card">
+      <h2>歷屆考題練習</h2>
+      <p>共 5 題財報歷屆問答題（含計算題），<br>先思考自己的答案，再點「顯示答案」對照解答。</p>
+      <div class="info-row">
+        <div class="info-item"><span class="info-val">5</span><span class="info-label">題數</span></div>
+        <div class="info-item"><span class="info-val">問答</span><span class="info-label">題型</span></div>
+      </div>
+      <div class="shuffle-row">
+        <label><input type="radio" name="shuffle" value="order" checked> 依序出題</label>
+        <label><input type="radio" name="shuffle" value="shuffle"> 隨機出題</label>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <a class="btn-primary-full" href="index.html" style="flex:1;text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;background:var(--surface);color:var(--ink);border:1.5px solid var(--border);">← 回首頁</a>
+        <button class="btn-primary-full" onclick="startQuiz()" style="flex:1.5;">開始練習 →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz -->
+  <div class="screen" id="screen-quiz">
+    <div class="progress-bar-wrap">
+      <div class="progress-info">
+        <span class="progress-label" id="prog-label">第 1 題 / 共 5 題</span>
+        <span class="progress-checked" id="prog-checked">已看過 0 題</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="dot-map" id="dot-map"></div>
+
+    <div class="q-card">
+      <div class="q-num-label" id="q-num-label">Q1</div>
+      <div class="q-stem" id="q-stem"></div>
+      <button class="show-ans-btn" id="show-ans-btn" onclick="toggleAnswer()">📖 顯示答案</button>
+      <div id="answer-wrap" style="display:none">
+        <div class="answer-box">
+          <span class="answer-label">參考答案</span>
+          <div class="answer-text" id="answer-text"></div>
+        </div>
+        <button class="hide-ans-btn" onclick="hideAnswer()">隱藏答案</button>
+      </div>
+    </div>
+
+    <div class="nav-bar">
+      <button class="btn-nav" id="btn-prev" onclick="goPrev()">← 上一題</button>
+      <button class="btn-end" onclick="confirmEnd()">結束</button>
+      <button class="btn-nav" id="btn-next" onclick="goNext()">下一題 →</button>
+    </div>
+  </div>
+
+  <!-- Result -->
+  <div class="screen" id="screen-result">
+    <div class="result-card">
+      <div class="result-icon">🎓</div>
+      <div class="result-title">練習結束</div>
+      <div class="result-stats">
+        <div class="rs"><span class="rs-val" id="res-total">0</span><span class="rs-label">總題數</span></div>
+        <div class="rs"><span class="rs-val" id="res-checked" style="color:var(--green)">0</span><span class="rs-label">看過答案</span></div>
+        <div class="rs"><span class="rs-val" id="res-skipped" style="color:var(--yellow)">0</span><span class="rs-label">未查看</span></div>
+      </div>
+      <div class="result-msg" id="res-msg"></div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-primary-full" onclick="restartQuiz()" style="flex:1;">再練一次</button>
+        <a class="btn-primary-full" href="index.html" style="flex:1;text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;background:var(--surface);color:var(--ink);border:1.5px solid var(--border);">回首頁</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal-bg" id="modal" style="display:none">
+  <div class="modal">
+    <h3>確定要結束嗎？</h3>
+    <p id="modal-msg"></p>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeModal()">繼續練習</button>
+      <button class="btn-modal-confirm" onclick="endQuiz()">確定結束</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const allQuestions = [
+  {
+    id:1,
+    stem:'試說明何謂「速動資產」？並列舉三個屬於「速動資產」的會計項目。<br><span style="font-size:.75rem;color:var(--ink-light)">（111／112／113 學年度考題）</span>',
+    answer:'1. 定義\n可以快速變現的資產。\n\n2. 三個例子\n• 現金\n• 零用金\n• 銀行存款'
+  },
+  {
+    id:2,
+    stem:'A 企業的 X2 年底資產負債表部分項目與 X2 年度的綜合損益表部分項目，請計算：<br>(1) 營運資金　(2) 流動比率　(3) 速動比率　(4) 利息保障倍數<br><span style="font-size:.75rem;color:var(--ink-light)">（111／112／113 學年度，金額可能會變）</span><table class="data-table"><thead><tr><th>項目</th><th>X2 年(度)</th></tr></thead><tbody><tr><td>存貨</td><td class="num">$57,200</td></tr><tr><td>預付款項</td><td class="num">2,000</td></tr><tr><td>流動資產合計</td><td class="num">532,800</td></tr><tr><td>流動負債</td><td class="num">296,000</td></tr><tr><td>利息費用</td><td class="num">3,000</td></tr><tr><td>所得稅費用</td><td class="num">27,000</td></tr><tr><td>本期淨利</td><td class="num">240,000</td></tr></tbody></table>',
+    answer:'<div class="formula-box"><b>1. 營運資金 = <span class="ans-num">$236,800</span></b><div class="calc-line">= 流動資產合計 − 流動負債<br>= 532,800 − 296,000 = 236,800</div></div><div class="formula-box"><b>2. 流動比率 = <span class="ans-num">1.8</span></b><div class="formula-line"><span>=　</span><span class="formula"><span class="num">流動資產</span><span class="den">流動負債</span></span><span>　=　</span><span class="formula"><span class="num">532,800</span><span class="den">296,000</span></span><span>　= 1.8</span></div></div><div class="formula-box"><b>3. 速動比率 = <span class="ans-num">1.6</span></b><div class="formula-line"><span>=　</span><span class="formula"><span class="num">流動資產 − 存貨 − 預付款項</span><span class="den">流動負債</span></span></div><div class="calc-line">= (532,800 − 57,200 − 2,000) ÷ 296,000 = 1.6</div></div><div class="formula-box"><b>4. 利息保障倍數 = <span class="ans-num">90</span></b><div class="formula-line"><span>=　</span><span class="formula"><span class="num">淨利 + 利息費用 + 所得稅</span><span class="den">利息費用</span></span></div><div class="calc-line">= (240,000 + 3,000 + 27,000) ÷ 3,000 = 270,000 ÷ 3,000 = 90</div></div>'
+  },
+  {
+    id:3,
+    stem:'A 企業的 X2 年底資產負債表部分項目與 X2 年度的綜合損益表部分項目，請計算：<br>(1) 負債比率　(2) 權益比率　(3) 負債對權益比率　(4) 長期資金占不動產、廠房及設備比率<br><span style="font-size:.75rem;color:var(--ink-light)">（112／113 學年度考題）</span><table class="data-table"><thead><tr><th>項目</th><th>X2 年(度)</th></tr></thead><tbody><tr><td>不動產、廠房及設備</td><td class="num">$800,000</td></tr><tr><td>資產總額</td><td class="num">1,600,000</td></tr><tr><td>非流動負債</td><td class="num">500,000</td></tr><tr><td>負債總額</td><td class="num">600,000</td></tr><tr><td>權益總額</td><td class="num">1,000,000</td></tr></tbody></table>',
+    answer:'<div class="formula-box"><b>1. 負債比率 = <span class="ans-num">37.5%</span></b><div class="formula-line"><span>=　</span><span class="formula"><span class="num">負債總額</span><span class="den">資產總額</span></span><span>　=　</span><span class="formula"><span class="num">600,000</span><span class="den">1,600,000</span></span><span>　= 0.375 = 37.5%</span></div></div><div class="formula-box"><b>2. 權益比率 = <span class="ans-num">62.5%</span></b><div class="formula-line"><span>=　</span><span class="formula"><span class="num">權益總額</span><span class="den">資產總額</span></span><span>　=　</span><span class="formula"><span class="num">1,000,000</span><span class="den">1,600,000</span></span><span>　= 0.625 = 62.5%</span></div><div class="calc-line">或用：1 − 負債比率 = 1 − 37.5% = 62.5%</div></div><div class="formula-box"><b>3. 負債對權益比率 = <span class="ans-num">60%</span></b><div class="formula-line"><span>=　</span><span class="formula"><span class="num">負債總額</span><span class="den">權益總額</span></span><span>　=　</span><span class="formula"><span class="num">600,000</span><span class="den">1,000,000</span></span><span>　= 0.6 = 60%</span></div></div><div class="formula-box"><b>4. 長期資金占不動產、廠房及設備比率 = <span class="ans-num">187.5%</span></b><div class="formula-line"><span>=　</span><span class="formula"><span class="num">權益總額 + 非流動負債</span><span class="den">不動產、廠房及設備</span></span></div><div class="calc-line">= (1,000,000 + 500,000) ÷ 800,000<br>= 1,500,000 ÷ 800,000 = 1.875 = 187.5%</div></div>'
+  },
+  {
+    id:4,
+    stem:'請對營業活動各列舉兩項會造成現金流出和現金流入的項目。<br><span style="font-size:.75rem;color:var(--ink-light)">（111／112／113 學年度考題）</span>',
+    answer:'1. 現金流入（任舉兩項）\n• 銷貨收現數\n• 利息收入收現數\n（或：應收款項收現、提供勞務收現）\n\n2. 現金流出（任舉兩項）\n• 進貨付現數\n• 薪資付現數\n（或：應付款項付現、各項稅捐付現、現金支付各項費用）'
+  },
+  {
+    id:5,
+    stem:'銷售數量 600 單位，單位售價 $500，單位變動成本 $300，固定成本 $120,000，請計算：<br>(1) 損益兩平的銷售量<br>(2) 損益兩平的營業收入<br><span style="font-size:.75rem;color:var(--ink-light)">（111／112／113 學年度考題）</span>',
+    answer:'<div class="formula-box"><b>1. 損益兩平銷售量 = <span class="ans-num">600 單位</span></b><div class="formula-line"><span>公式：</span><span class="formula"><span class="num">固定成本</span><span class="den">單位售價 − 單位變動成本</span></span><span>　=　</span><span class="formula"><span class="num">F</span><span class="den">P − AVC</span></span></div><div class="calc-line">代入：120,000 ÷ (500 − 300) = 120,000 ÷ 200 = 600 單位<br>驗證：(P − AVC) × Q = F<br>　　　(500 − 300) × 600 = 120,000 ✓</div></div><div class="formula-box"><b>2. 損益兩平營業收入 = <span class="ans-num">$300,000</span></b><div class="calc-line">營業收入 = 單位售價 × 銷售量<br>　　　　= 500 × 600 = $300,000<br><br>驗證：P × Q = AVC × Q + F<br>　　　500 × 600 = 300 × 600 + 120,000<br>　　　300,000 = 180,000 + 120,000 = 300,000 ✓</div></div>'
+  },
+];
+
+// State
+let queue=[], checked=[], curIdx=0;
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+
+function startQuiz(){
+  const doShuffle=document.querySelector('input[name="shuffle"]:checked').value==='shuffle';
+  queue=doShuffle?shuffle([...allQuestions]):[...allQuestions];
+  checked=new Array(queue.length).fill(false);
+  curIdx=0;
+  buildDotMap();
+  renderQ();
+  showScreen('screen-quiz');
+  updateHeader();
+}
+
+function updateHeader(){
+  const n=checked.filter(Boolean).length;
+  document.getElementById('hdr-info').textContent=`已看 ${n} / ${queue.length}`;
+}
+
+function buildDotMap(){
+  const map=document.getElementById('dot-map');
+  map.innerHTML=queue.map((_,i)=>`<div class="dot" id="dot-${i}" onclick="jumpTo(${i})" title="第${i+1}題">${i+1}</div>`).join('');
+}
+
+function updateDots(){
+  queue.forEach((_,i)=>{
+    const d=document.getElementById('dot-'+i);
+    d.className='dot';
+    if(checked[i]) d.classList.add('checked');
+    if(i===curIdx) d.classList.add('current');
+  });
+}
+
+function renderQ(){
+  const q=queue[curIdx];
+  const total=queue.length;
+  document.getElementById('prog-label').textContent=`第 ${curIdx+1} 題 / 共 ${total} 題`;
+  const n=checked.filter(Boolean).length;
+  document.getElementById('prog-checked').textContent=`已看過 ${n} 題`;
+  document.getElementById('prog-fill').style.width=(n/total*100)+'%';
+  document.getElementById('q-num-label').textContent=`Q${curIdx+1}（原題號 #${q.id}）`;
+  document.getElementById('q-stem').innerHTML=q.stem.replace(/\n/g,'<br>');
+  document.getElementById('answer-text').innerHTML=q.answer.replace(/\n/g,'<br>');
+  // hide answer when switching question
+  document.getElementById('answer-wrap').style.display='none';
+  document.getElementById('show-ans-btn').style.display='';
+  document.getElementById('show-ans-btn').textContent='📖 顯示答案';
+  document.getElementById('btn-prev').disabled=curIdx===0;
+  document.getElementById('btn-next').disabled=curIdx===queue.length-1;
+  updateDots();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function toggleAnswer(){
+  document.getElementById('answer-wrap').style.display='block';
+  document.getElementById('show-ans-btn').style.display='none';
+  if(!checked[curIdx]){
+    checked[curIdx]=true;
+    updateHeader();
+    updateDots();
+    const n=checked.filter(Boolean).length;
+    document.getElementById('prog-checked').textContent=`已看過 ${n} 題`;
+    document.getElementById('prog-fill').style.width=(n/queue.length*100)+'%';
+  }
+}
+
+function hideAnswer(){
+  document.getElementById('answer-wrap').style.display='none';
+  document.getElementById('show-ans-btn').style.display='';
+}
+
+function goPrev(){if(curIdx>0){curIdx--;renderQ();}}
+function goNext(){if(curIdx<queue.length-1){curIdx++;renderQ();}}
+function jumpTo(i){curIdx=i;renderQ();}
+
+function confirmEnd(){
+  const n=checked.filter(Boolean).length;
+  const skipped=queue.length-n;
+  const msg=skipped>0
+    ? `目前已看過 ${n} 題，還有 ${skipped} 題沒有查看過答案。\n確定要結束練習嗎？`
+    : `全部 ${queue.length} 題都看過答案了！\n確定要結束練習嗎？`;
+  document.getElementById('modal-msg').textContent=msg;
+  document.getElementById('modal').style.display='flex';
+}
+function closeModal(){document.getElementById('modal').style.display='none';}
+
+function endQuiz(){
+  closeModal();
+  const total=queue.length;
+  const n=checked.filter(Boolean).length;
+  const skipped=total-n;
+  document.getElementById('res-total').textContent=total;
+  document.getElementById('res-checked').textContent=n;
+  document.getElementById('res-skipped').textContent=skipped;
+  const msg=n===total?'👏 全部題目都看過了，準備充分！':n>=total*0.7?'📚 大部分看過了，記得補完剩下的題目！':'💪 還有不少沒看過，要繼續加油喔！';
+  document.getElementById('res-msg').textContent=msg;
+  showScreen('screen-result');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function restartQuiz(){showScreen('screen-start');}
+</script>
+</body>
+</html>
